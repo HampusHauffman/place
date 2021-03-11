@@ -24,9 +24,9 @@ const App = () => {
   //sock
   const callback = (message) => {
     if (message.body) {
-      alert("got message with body " + message.body)
+      console.log(message.body)
     } else {
-      alert("got empty message");
+      console.log("got empty message");
     }
   };
 
@@ -44,10 +44,8 @@ const App = () => {
     var socket = new SockJS('http://localhost:8080/ws/');
     var stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-      console.log('Connected: ' + frame);
-      stompClient.subscribe('/topic/place', function (greeting) {
-        console.log(greeting.body);
-      });
+      //console.log('Connected: ' + frame);
+      stompClient.subscribe('/topic/place', callback);
     });
 
   },[]);
