@@ -35,8 +35,8 @@ public class Webhook {
   }
 
   @MessageMapping("/pixel")
-  public void savePixel(@Payload String pixel){
-    System.out.println(pixel);
+  public void savePixel(@Payload byte[] pixel){
+    System.out.println(pixel[0] + " "+ pixel[1]);
     //redisRepo.setPixel(1,2,3,4,5,6);
   }
 

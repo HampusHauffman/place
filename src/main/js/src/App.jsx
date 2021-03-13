@@ -22,7 +22,7 @@ const App = () => {
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
-  const client = new Client({
+  const [client, setClient] = useState(new Client({
     brokerURL: 'ws://localhost:8080/ws',
     debug: function (str) {
       console.log(str);
@@ -30,55 +30,67 @@ const App = () => {
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
-  });
+    logRawCommunication: true,
+  }));
 
-  useEffect(() => {
-
-    client.onConnect = (frame) => {
-      client.subscribe("/topic/place", (sub) => {console.log(sub.body)})
-      console.log("Connected: " + frame);
-    }
-
-    client.onStompError =  (frame) => {
-      console.log('Broker reported error: ' + frame.headers['message']);
-      console.log('Additional details: ' + frame.body);
-    };
-
-    client.activate();
-
-
-  },[]);
-
-
-
+  //STOMP
   const callback = (message) => {
     if (message.body) {
       console.log(message.body)
-      const mb = JSON.parse("[" + message.body + "]")[0];
-      canvasSettings.pixels[9] = [mb[0]*17,mb[1]*17,mb[2]*17,mb[3]*17]; //Confusing Code clean up
-      setCanvasSettings({...canvasSettings})
+      //messagePixelArray
+      var mpa = JSON.parse("[" + message.body + "]");
+
+      var newPixels = [...canvasSettings.pixels];
+      newPixels[6] = [mpa[0][0]*17,mpa[0][1]*17,mpa[0][2]*17,255];
+      setCanvasSettings({...canvasSettings, "pixels":newPixels});
+
     } else {
       console.log("got empty message");
     }
   };
 
+  client.onConnect = (frame) => {
+    client.subscribe("/topic/place", callback);
+    console.log("Connected: " + frame);
+  }
+
+  client.onStompError =  (frame) => {
+    console.log('Broker reported error: ' + frame.headers['message']);
+    console.log('Additional details: ' + frame.body);
+  };
+
+
   useEffect(() => {
-    //Get context for canvas
-    const canvasObj = canvasRef.current;
-    const ctx = canvasObj.getContext("2d");
+
+
+    client.activate();
+
+  },[]);
+
+
+  useEffect(() => {
 
     //Create imageData
     const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
+
     //Display imageData
+    //Get context for canvas
+    const canvasObj = canvasRef.current;
+    const ctx = canvasObj.getContext("2d");
     ctx.putImageData(imageData,0,0);
   },[canvasSettings])
 
   const onCanvasClick = (obj) => {
+    console.log(obj);
     const pixels = getClickedPixel(obj);
-    client.publish({destination:"/app/pixel", body:JSON.stringify(pixels), headers:{}})
-    console.log(pixels); //:)
-
+    console.log("YOOOOOOOOOOO",pixels);
+    client.publish({
+      destination:"/app/pixel",
+      headers: { 'content-type': 'application/octet-stream',
+        'content-length':2 },
+      binaryBody:new Uint8Array([pixels.x,pixels.y])})
   }
+
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -92,7 +104,6 @@ const App = () => {
       y: Math.floor((evt.clientY - rect.top) * scaleY)   // been adjusted to be relative to element
     }
   }
-
 
   return (
     <>
