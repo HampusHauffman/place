@@ -35,14 +35,11 @@ const App = () => {
   //STOMP
   const callback = (message) => {
     if (message.body) {
-      console.log("REC data: ", message.body);
       //messagePixelArray
-      var mpa = JSON.parse('[' + message.body + ']');
-      var newPixels = [...canvasSettings.pixels];
-      console.log(mpa[0][4]+(mpa[0][5]*canvasSettings.height));
-      newPixels[mpa[0][4]+mpa[0][5]] = [mpa[0][0]*17,mpa[0][1]*17,mpa[0][2]*17,255];
-      setCanvasSettings({...canvasSettings, "pixels":newPixels});
-
+      var mpa = JSON.parse('[' + message.body + ']')[0];
+      var newCanvas = {...canvasSettings};
+      newCanvas.pixels[mpa.x+mpa.y*canvasSettings.height] = [mpa.r*17,mpa.g*17,mpa.b*17,255];
+      setCanvasSettings(newCanvas);
     } else {
       console.log("got empty message");
     }
@@ -78,13 +75,10 @@ const App = () => {
   },[canvasSettings])
 
   const onCanvasClick = (obj) => {
-    console.log(obj);
     const pixels = getClickedPixel(obj);
     client.publish({
       destination:"/app/pixel",
-      headers: { 'content-type': 'application/octet-stream',
-        'content-length':2 },
-      binaryBody:new Uint8Array([pixels.x,pixels.y])})
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y})})
   }
 
 
