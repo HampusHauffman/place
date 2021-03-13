@@ -76,7 +76,7 @@ const App = () => {
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);
     client.publish({destination:"/app/pixel", body:JSON.stringify(pixels), headers:{}})
-    console.log(pixels);
+    console.log(pixels); //:)
 
   }
 
