@@ -1,11 +1,16 @@
 import React, {useRef,useEffect, useState}  from 'react';
 import * as SockJS from 'sockjs-client';
-import {Client, Message, Stomp} from '@stomp/stompjs';
+import {Client, Message, Stomp, StompConfig} from '@stomp/stompjs';
+import SockJsClient from 'react-stomp';
 import './App.css';
 
 
 const App = () => {
+  //Webhook
+  const socket = new SockJS('http://localhost:8080/ws/');
+  const stompClient = Stomp.over(socket);
 
+  //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
     "height": 5,
     "width": 5,
@@ -21,10 +26,21 @@ const App = () => {
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
-  //sock
+  useEffect(() => {
+    //STOMP
+    stompClient.connect({}, function (frame) {
+      //console.log('Connected: ' + frame);
+      stompClient.subscribe('/topic/place', callback);
+    });
+
+  },[]);
+
   const callback = (message) => {
     if (message.body) {
       console.log(message.body)
+      const mb = JSON.parse("[" + message.body + "]")[0];
+      canvasSettings.pixels[9] = [mb[0]*17,mb[1]*17,mb[2]*17,mb[3]*17]; //Confusing Code clean up
+      setCanvasSettings({...canvasSettings})
     } else {
       console.log("got empty message");
     }
@@ -39,16 +55,14 @@ const App = () => {
     const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
     //Display imageData
     ctx.putImageData(imageData,0,0);
+    console.log(canvasSettings);
+  },[canvasSettings])
 
-    //STOMP
-    var socket = new SockJS('http://localhost:8080/ws/');
-    var stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-      //console.log('Connected: ' + frame);
-      stompClient.subscribe('/topic/place', callback);
-    });
+  const onCanvasClick = (obj) => {
+    console.log(getClickedPixel(obj));
+    stompClient.send("/app/hello", {}, JSON.stringify({"x":3,"y":3}));
 
-  },[]);
+  }
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -63,14 +77,15 @@ const App = () => {
     }
   }
 
-  const onCanvasClick = (obj) => {
-    console.log(getClickedPixel(obj));
-  }
-
 
   return (
     <>
       <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.width} height={canvasSettings.height}/>
+      <SockJsClient url={ wsSourceUrl } topics={["/topic/all"]}
+                    onMessage={ this.onMessageReceive } ref={ (client) => { this.clientRef = client }}
+                    onConnect={ () => { this.setState({ clientConnected: true }) } }
+                    onDisconnect={ () => { this.setState({ clientConnected: false }) } }
+                    debug={ false }/>
       </>
   );
 };
