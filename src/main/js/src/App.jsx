@@ -30,18 +30,17 @@ const App = () => {
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
-    logRawCommunication: true,
   }));
 
   //STOMP
   const callback = (message) => {
     if (message.body) {
-      console.log(message.body)
+      console.log("REC data: ", message.body);
       //messagePixelArray
-      var mpa = JSON.parse("[" + message.body + "]");
-
+      var mpa = JSON.parse('[' + message.body + ']');
       var newPixels = [...canvasSettings.pixels];
-      newPixels[6] = [mpa[0][0]*17,mpa[0][1]*17,mpa[0][2]*17,255];
+      console.log(mpa[0][4]+(mpa[0][5]*canvasSettings.height));
+      newPixels[mpa[0][4]+mpa[0][5]] = [mpa[0][0]*17,mpa[0][1]*17,mpa[0][2]*17,255];
       setCanvasSettings({...canvasSettings, "pixels":newPixels});
 
     } else {
@@ -61,8 +60,6 @@ const App = () => {
 
 
   useEffect(() => {
-
-
     client.activate();
 
   },[]);
@@ -83,7 +80,6 @@ const App = () => {
   const onCanvasClick = (obj) => {
     console.log(obj);
     const pixels = getClickedPixel(obj);
-    console.log("YOOOOOOOOOOO",pixels);
     client.publish({
       destination:"/app/pixel",
       headers: { 'content-type': 'application/octet-stream',

@@ -26,20 +26,13 @@ public class Webhook {
     return "All the pixel data on subscribe";
   }
 
-  @Scheduled(fixedRate = 5000)
+  @MessageMapping("/pixel")
   @SendTo("/topic/place")
-  public void broadcastPixels()  {
-    List<Long> data = redisRepo.getPixel(3,3);
-    data.addAll(List.of(3L,3L));
+  public void pixels(@Payload byte[] pixel)  {
+    redisRepo.setPixel(pixel[0],pixel[1],15,0,0,15);
+    List<Long> data = redisRepo.getPixel(pixel[0], pixel[1]);
+    data.addAll(List.of(Long.valueOf(String.valueOf(pixel[0])),Long.valueOf(String.valueOf(pixel[1]))));
     template.convertAndSend("/topic/place", data);
   }
-
-  @MessageMapping("/pixel")
-  public void savePixel(@Payload byte[] pixel){
-    System.out.println(pixel[0] + " "+ pixel[1]);
-    //redisRepo.setPixel(1,2,3,4,5,6);
-  }
-
-
 
 }
