@@ -1,14 +1,10 @@
 import React, {useRef,useEffect, useState}  from 'react';
 import * as SockJS from 'sockjs-client';
-import {Client, Message, Stomp, StompConfig} from '@stomp/stompjs';
-import SockJsClient from 'react-stomp';
+import { Client, Message } from '@stomp/stompjs';
 import './App.css';
 
 
 const App = () => {
-  //Webhook
-  const socket = new SockJS('http://localhost:8080/ws/');
-  const stompClient = Stomp.over(socket);
 
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
@@ -26,14 +22,34 @@ const App = () => {
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
+  const client = new Client({
+    brokerURL: 'ws://localhost:8080/ws',
+    debug: function (str) {
+      console.log(str);
+    },
+    reconnectDelay: 5000,
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+  });
+
   useEffect(() => {
-    //STOMP
-    stompClient.connect({}, function (frame) {
-      //console.log('Connected: ' + frame);
-      stompClient.subscribe('/topic/place', callback);
-    });
+
+    client.onConnect = (frame) => {
+      client.subscribe("/topic/place", (sub) => {console.log(sub.body)})
+      console.log("Connected: " + frame);
+    }
+
+    client.onStompError =  (frame) => {
+      console.log('Broker reported error: ' + frame.headers['message']);
+      console.log('Additional details: ' + frame.body);
+    };
+
+    client.activate();
+
 
   },[]);
+
+
 
   const callback = (message) => {
     if (message.body) {
@@ -55,12 +71,12 @@ const App = () => {
     const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
     //Display imageData
     ctx.putImageData(imageData,0,0);
-    console.log(canvasSettings);
   },[canvasSettings])
 
   const onCanvasClick = (obj) => {
-    console.log(getClickedPixel(obj));
-    stompClient.send("/app/hello", {}, JSON.stringify({"x":3,"y":3}));
+    const pixels = getClickedPixel(obj);
+    client.publish({destination:"/app/pixel", body:JSON.stringify(pixels), headers:{}})
+    console.log(pixels);
 
   }
 
@@ -81,11 +97,6 @@ const App = () => {
   return (
     <>
       <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.width} height={canvasSettings.height}/>
-      <SockJsClient url={ wsSourceUrl } topics={["/topic/all"]}
-                    onMessage={ this.onMessageReceive } ref={ (client) => { this.clientRef = client }}
-                    onConnect={ () => { this.setState({ clientConnected: true }) } }
-                    onDisconnect={ () => { this.setState({ clientConnected: false }) } }
-                    debug={ false }/>
       </>
   );
 };
