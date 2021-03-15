@@ -2,6 +2,8 @@ import React, {useRef,useEffect, useState}  from 'react';
 import * as SockJS from 'sockjs-client';
 import { Client, Message } from '@stomp/stompjs';
 import './App.css';
+import {SwatchesPicker} from "react-color";
+import {Github} from "react-color/lib/components/github/Github";
 
 
 const App = () => {
@@ -38,7 +40,9 @@ const App = () => {
       //messagePixelArray
       var mpa = JSON.parse('[' + message.body + ']')[0];
       var newCanvas = {...canvasSettings};
-      newCanvas.pixels[mpa.x+mpa.y*canvasSettings.height] = [mpa.r*17,mpa.g*17,mpa.b*17,255];
+      mpa.map((m) => {
+      newCanvas.pixels[m.x+m.y*canvasSettings.height] = [m.r*63,m.g*63,m.b*63,255]; //todo
+      })
       setCanvasSettings(newCanvas);
     } else {
       console.log("got empty message");
@@ -77,8 +81,8 @@ const App = () => {
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);
     client.publish({
-      destination:"/app/pixel",
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y})})
+      destination:"/pixel", //app/pixel if prefix...
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "r":0, "g":1, "b":2})})
   }
 
 
@@ -95,11 +99,35 @@ const App = () => {
     }
   }
 
+  const [color, setColor] = useState('#FFFFFF')
+  const swatchOnClick = (obj) =>{
+    console.log(obj);
+  }
+
+  const swatchColors = [
+    '#FFFFFF',
+    '#E4E4E4',
+    '#888888',
+    '#222222',
+    '#FFA7D1',
+    '#E50000',
+    '#E59500',
+    '#A06A42',
+    '#E5D900',
+    '#94E044',
+    '#02BE01',
+    '#00D3DD',
+    '#0083C7',
+    '#0000EA',
+    '#CF6EE4',
+    '#820080',];
+
   return (
     <>
       <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.width} height={canvasSettings.height}/>
-      </>
+      <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"} />
+    </>
   );
-};
+}
 
 export default App;

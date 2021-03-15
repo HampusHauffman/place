@@ -9,7 +9,10 @@
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 
-    border: gray;
-    border-bottom-width: 10px;
-    border-style: solid;
+}
+
+.swatch{
+    position: absolute;
+    top: 8px;
+    left: 16px;
 }

@@ -3,6 +3,7 @@ package Hampus.place.webhook;
 import Hampus.place.Pixel;
 import Hampus.place.redis.RedisRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -27,23 +28,25 @@ public class Webhook {
   ObjectMapper objectMapper = new ObjectMapper();
 
 
-  @SubscribeMapping("/subscribe") //app/subscribe
+  @SneakyThrows
+  @SubscribeMapping("/topic/place") //app/subscribe
   public String sendOneTimeMessage() {
-    return "All the pixel data on subscribe";
+    List<Pixel> p = new ArrayList<Pixel>();
+    for(int i = 0; i < 5; i++){
+      for(int j = 0; j < 5; j++) {
+        p.add(redisRepo.getPixel(j,i));
+      }
+    }
+    return objectMapper.writeValueAsString(p);
   }
 
   @SneakyThrows
   @MessageMapping("/pixel")
   @SendTo("/topic/place")
   public void pixels(@Payload String pixel)  {
-    System.out.println(pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
-    System.out.println(p);
-    //redisRepo.setPixel(pixel[0],pixel[1],15,0,0,15);
-    //List<Long> data = redisRepo.getPixel(pixel[0], pixel[1]);
-    //data.addAll(List.of(Long.valueOf(String.valueOf(pixel[0])),Long.valueOf(String.valueOf(pixel[1]))));
-    template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
-
+    redisRepo.setPixel(p);
+    template.convertAndSend("/topic/place", objectMapper.writeValueAsString(List.of(p)));
   }
 
 }
