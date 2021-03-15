@@ -41,7 +41,7 @@ const App = () => {
       var mpa = JSON.parse('[' + message.body + ']')[0];
       var newCanvas = {...canvasSettings};
       mpa.map((m) => {
-      newCanvas.pixels[m.x+m.y*canvasSettings.height] = [m.r*63,m.g*63,m.b*63,255]; //todo
+      newCanvas.pixels[m.x+m.y*canvasSettings.height] = [hexToRgb(swatchColors[m.color]).r,hexToRgb(swatchColors[m.color]).g,hexToRgb(swatchColors[m.color]).b,255]; //todo
       })
       setCanvasSettings(newCanvas);
     } else {
@@ -82,7 +82,7 @@ const App = () => {
     const pixels = getClickedPixel(obj);
     client.publish({
       destination:"/pixel", //app/pixel if prefix...
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "r":0, "g":1, "b":2})})
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})})
   }
 
 
@@ -99,9 +99,9 @@ const App = () => {
     }
   }
 
-  const [color, setColor] = useState('#FFFFFF')
+  const [selectedColor, setSelectedColor] = useState('#FFFFFF')
   const swatchOnClick = (obj) =>{
-    console.log(obj);
+    setSelectedColor(swatchColors.indexOf(obj.hex));
   }
 
   const swatchColors = [
@@ -121,6 +121,15 @@ const App = () => {
     '#0000EA',
     '#CF6EE4',
     '#820080',];
+
+  const hexToRgb = (hex) => {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
 
   return (
     <>

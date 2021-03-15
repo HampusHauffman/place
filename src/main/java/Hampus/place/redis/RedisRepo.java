@@ -15,23 +15,16 @@ public class RedisRepo {
   private Jedis jedis = new Jedis("localhost");
 
   public void setPixel(Pixel p){
-  int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*6);
-    jedis.bitfield(KEY,"SET", "u2", String.valueOf(pp), String.valueOf(p.getR()),
-        "SET", "u2", String.valueOf(pp+2), String.valueOf(p.getG()),
-        "SET", "u2", String.valueOf(pp+4), String.valueOf(p.getB()));
-
+  int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
+    jedis.bitfield(KEY,"SET", "u4", String.valueOf(pp), String.valueOf(p.getColor()));
   }
 
   public Pixel getPixel(int x, int y){
     //To start redis: redis-server /usr/local/etc/redis.conf
-    int pp = (x+y*IMAGE_SIZE)*6;
+    int pp = (x+y*IMAGE_SIZE)*4;
     List<Long> l = jedis.bitfield(KEY,
-        "GET", "u2", String.valueOf(pp),
-        "GET", "u2", String.valueOf(pp+2),
-        "GET", "u2", String.valueOf(pp+4));
-
-    List<Integer> li = l.stream().mapToInt(Long::intValue).boxed().collect(Collectors.toList());
-    return Pixel.builder().r(li.get(0)).g(li.get(1)).b(li.get(2)).x(x).y(y).build();
+        "GET", "u4", String.valueOf(pp));
+    return Pixel.builder().color(l.get(0).intValue()).x(x).y(y).build();
   }
 
 

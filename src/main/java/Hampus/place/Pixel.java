@@ -10,9 +10,7 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class Pixel {
-  int r;
-  int g;
-  int b;
+  int color;
   int x;
   int y;
 
