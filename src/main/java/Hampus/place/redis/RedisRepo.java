@@ -10,7 +10,7 @@ import redis.clients.jedis.Jedis;
 public class RedisRepo {
 
   public static final String KEY = "place";
-  private static int IMAGE_SIZE = 5;
+  public static int IMAGE_SIZE = 50;
 
   private Jedis jedis = new Jedis("localhost");
 

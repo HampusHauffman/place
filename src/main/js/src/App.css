@@ -9,6 +9,8 @@
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 
+    outline: 2px solid gray;;
+
 }
 
 .swatch{

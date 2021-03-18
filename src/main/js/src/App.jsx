@@ -10,15 +10,9 @@ const App = () => {
 
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
-    "height": 5,
-    "width": 5,
-    "pixels":[
-      [245,245,245,255],[245,245,245,255],[245,245,245,255],[245,245,245,255],[245,245,245,255],
-      [235,235,235,255],[235,235,235,255],[235,235,235,255],[235,235,235,255],[235,235,235,255],
-      [225,225,225,255],[225,225,225,255],[225,225,225,255],[225,225,225,255],[225,225,225,255],
-      [215,215,215,255],[215,215,215,255],[215,215,215,255],[215,215,215,255],[215,215,215,255],
-      [205,205,205,255],[205,205,205,255],[205,205,205,255],[205,205,205,255],[205,205,205,255],
-    ]
+    "height": 50,
+    "width": 50,
+    "pixels":new Array(2500).fill([0,0,0,255])
   })
 
   //Reference to the mutable canvas context value
@@ -67,7 +61,7 @@ const App = () => {
 
 
   useEffect(() => {
-
+    console.log(canvasSettings.pixels.flat());
     //Create imageData
     const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
 
@@ -78,11 +72,12 @@ const App = () => {
     ctx.putImageData(imageData,0,0);
   },[canvasSettings])
 
+
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);
     client.publish({
       destination:"/pixel", //app/pixel if prefix...
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})})
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":swatchColors.indexOf("#FFFFFF")})})
   }
 
 
@@ -101,6 +96,7 @@ const App = () => {
 
   const [selectedColor, setSelectedColor] = useState('#FFFFFF')
   const swatchOnClick = (obj) =>{
+    console.log(obj);
     setSelectedColor(swatchColors.indexOf(obj.hex));
   }
 
@@ -134,7 +130,7 @@ const App = () => {
   return (
     <>
       <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.width} height={canvasSettings.height}/>
-      <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"} />
+      <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"}/>
     </>
   );
 }
