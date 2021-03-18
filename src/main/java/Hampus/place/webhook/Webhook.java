@@ -44,6 +44,7 @@ public class Webhook {
   @MessageMapping("/pixel")
   @SendTo("/topic/place")
   public void pixels(@Payload String pixel)  {
+    System.out.println(pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
     redisRepo.setPixel(p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(List.of(p)));

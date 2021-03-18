@@ -61,7 +61,6 @@ const App = () => {
 
 
   useEffect(() => {
-    console.log(canvasSettings.pixels.flat());
     //Create imageData
     const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
 
@@ -77,7 +76,7 @@ const App = () => {
     const pixels = getClickedPixel(obj);
     client.publish({
       destination:"/pixel", //app/pixel if prefix...
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":swatchColors.indexOf("#FFFFFF")})})
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})})
   }
 
 
@@ -95,8 +94,9 @@ const App = () => {
   }
 
   const [selectedColor, setSelectedColor] = useState('#FFFFFF')
+
   const swatchOnClick = (obj) =>{
-    console.log(obj);
+    console.log(swatchColors.indexOf(obj.hex));
     setSelectedColor(swatchColors.indexOf(obj.hex));
   }
 
