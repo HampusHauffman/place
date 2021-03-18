@@ -4,19 +4,16 @@ import { Client, Message } from '@stomp/stompjs';
 import './App.css';
 import {SwatchesPicker} from "react-color";
 import {Github} from "react-color/lib/components/github/Github";
+import Canvas from "./Canvas";
 
 
 const App = () => {
 
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
-    "height": 50,
-    "width": 50,
+    "imageSize": 50,
     "pixels":new Array(2500).fill([0,0,0,255])
   })
-
-  //Reference to the mutable canvas context value
-  const canvasRef = useRef(null);
 
   const [client, setClient] = useState(new Client({
     brokerURL: 'ws://localhost:8080/ws',
@@ -31,11 +28,13 @@ const App = () => {
   //STOMP
   const callback = (message) => {
     if (message.body) {
+      console.log(message.body);
       //messagePixelArray
-      var mpa = JSON.parse('[' + message.body + ']')[0];
-      var newCanvas = {...canvasSettings};
+      let mpa = JSON.parse('[' + message.body + ']')[0];
+      let newCanvas = {...canvasSettings};
       mpa.map((m) => {
-      newCanvas.pixels[m.x+m.y*canvasSettings.height] = [hexToRgb(swatchColors[m.color]).r,hexToRgb(swatchColors[m.color]).g,hexToRgb(swatchColors[m.color]).b,255]; //todo
+        let rgb = hexToRgb(swatchColors[m.color]);
+      newCanvas.pixels[m.x+m.y*canvasSettings.imageSize] = [rgb.r,rgb.g,rgb.b,255]; //todo
       })
       setCanvasSettings(newCanvas);
     } else {
@@ -60,40 +59,7 @@ const App = () => {
   },[]);
 
 
-  useEffect(() => {
-    //Create imageData
-    const imageData = new ImageData(new Uint8ClampedArray(canvasSettings.pixels.flat()),canvasSettings.width,canvasSettings.height);
-
-    //Display imageData
-    //Get context for canvas
-    const canvasObj = canvasRef.current;
-    const ctx = canvasObj.getContext("2d");
-    ctx.putImageData(imageData,0,0);
-  },[canvasSettings])
-
-
-  const onCanvasClick = (obj) => {
-    const pixels = getClickedPixel(obj);
-    client.publish({
-      destination:"/pixel", //app/pixel if prefix...
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})})
-  }
-
-
-  //Get the clicked pixel
-  const getClickedPixel = (evt) => {
-    var canvas = canvasRef.current;
-    var rect = canvas.getBoundingClientRect(), // abs. size of element
-        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
-        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
-
-    return {
-      x: Math.floor((evt.clientX - rect.left) * scaleX),   // scale mouse coordinates after they have
-      y: Math.floor((evt.clientY - rect.top) * scaleY)   // been adjusted to be relative to element
-    }
-  }
-
-  const [selectedColor, setSelectedColor] = useState('#FFFFFF')
+  const [selectedColor, setSelectedColor] = useState(0)
 
   const swatchOnClick = (obj) =>{
     console.log(swatchColors.indexOf(obj.hex));
@@ -129,7 +95,7 @@ const App = () => {
 
   return (
     <>
-      <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.width} height={canvasSettings.height}/>
+      <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor}/>
       <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"}/>
     </>
   );
