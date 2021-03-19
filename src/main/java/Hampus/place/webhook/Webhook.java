@@ -30,14 +30,8 @@ public class Webhook {
 
   @SneakyThrows
   @SubscribeMapping("/topic/place") //app/subscribe
-  public String sendOneTimeMessage() {
-    List<Pixel> p = new ArrayList<Pixel>();
-    for(int i = 0; i < RedisRepo.IMAGE_SIZE; i++){
-      for(int j = 0; j < RedisRepo.IMAGE_SIZE; j++) {
-        p.add(redisRepo.getPixel(j,i));
-      }
-    }
-    return objectMapper.writeValueAsString(p);
+  public byte[] sendOneTimeMessage() {
+    return redisRepo.getAllPixels();
   }
 
   @SneakyThrows

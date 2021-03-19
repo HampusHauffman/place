@@ -1,16 +1,20 @@
 package Hampus.place.redis;
 
 import Hampus.place.Pixel;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.Jedis;
 
 @Repository
+@Component
 public class RedisRepo {
 
   public static final String KEY = "place";
-  public static int IMAGE_SIZE = 50;
+  public static int IMAGE_SIZE = 1000;
 
   private Jedis jedis = new Jedis("localhost");
 
@@ -27,7 +31,8 @@ public class RedisRepo {
     return Pixel.builder().color(l.get(0).intValue()).x(x).y(y).build();
   }
 
-
-
+  public byte[] getAllPixels(){
+    return jedis.get(KEY).getBytes(StandardCharsets.UTF_8);
+  }
 
 }

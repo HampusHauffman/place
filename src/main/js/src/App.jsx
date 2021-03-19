@@ -11,8 +11,8 @@ const App = () => {
 
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
-    "imageSize": 50,
-    "pixels":new Array(2500).fill([0,0,0,255])
+    "imageSize": 1000,
+    "pixels":new Array(1000000).fill([0,0,0,255]),
   })
 
   const [client, setClient] = useState(new Client({
@@ -27,8 +27,26 @@ const App = () => {
 
   //STOMP
   const callback = (message) => {
-    if (message.body) {
-      console.log(message.body);
+    if (message.headers['content-type'] === 'application/octet-stream') { //check if binary
+      let newCanvas = {...canvasSettings};
+
+      const b = new Uint8Array(1000000);
+      var i = 0;
+      for(i = 0; i < message.binaryBody.length; i = i + 2){
+        b[i] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
+        b[i+1] = message.binaryBody[i] & 15;
+
+        let rgb1 = hexToRgb(swatchColors[b[i]]);
+        let rgb2 = hexToRgb(swatchColors[b[i+1]]);
+
+        newCanvas.pixels[i] = [rgb1.r,rgb1.g,rgb1.b,255];
+        newCanvas.pixels[i+1] = [rgb2.r,rgb2.g,rgb2.b,255];
+      }
+      console.log(b);
+      setCanvasSettings(newCanvas);
+
+
+    } else if (message.body) {
       //messagePixelArray
       let mpa = JSON.parse('[' + message.body + ']')[0];
       let newCanvas = {...canvasSettings};
@@ -40,6 +58,7 @@ const App = () => {
     } else {
       console.log("got empty message");
     }
+
   };
 
   client.onConnect = (frame) => {

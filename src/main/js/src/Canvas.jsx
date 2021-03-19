@@ -24,7 +24,8 @@ const Canvas = ({client, canvasSettings, selectedColor}) => {
     const pixels = getClickedPixel(obj);
     client.publish({
       destination:"/pixel",
-      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})})
+      body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})
+      })
   }
 
   //Get the clicked pixel
