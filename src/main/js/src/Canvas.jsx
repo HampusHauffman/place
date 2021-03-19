@@ -1,11 +1,8 @@
-import React, {useRef,useEffect, useState}  from 'react';
-import * as SockJS from 'sockjs-client';
-import { Client, Message } from '@stomp/stompjs';
+import React, {useRef,useEffect}  from 'react';
 import './App.css';
-import {SwatchesPicker} from "react-color";
-import {Github} from "react-color/lib/components/github/Github";
 
-const Canvas = ({client, canvasSettings, selectedColor}) => {
+
+const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
@@ -19,6 +16,18 @@ const Canvas = ({client, canvasSettings, selectedColor}) => {
     const ctx = canvasObj.getContext("2d");
     ctx.putImageData(imageData,0,0);
   },[canvasSettings])
+
+  useEffect(() => {
+    if(pixel) {
+      console.log(pixel);
+      const imageData = new ImageData(
+          new Uint8ClampedArray([pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1, 1);
+      const canvasObj = canvasRef.current;
+      const ctx = canvasObj.getContext("2d");
+      console.log(pixel);
+      ctx.putImageData(imageData, pixel.x, pixel.y);
+    }
+  },[pixel])
 
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);

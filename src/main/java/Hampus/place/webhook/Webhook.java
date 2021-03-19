@@ -41,7 +41,7 @@ public class Webhook {
     System.out.println(pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
     redisRepo.setPixel(p);
-    template.convertAndSend("/topic/place", objectMapper.writeValueAsString(List.of(p)));
+    template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
   }
 
 }

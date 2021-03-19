@@ -1,8 +1,6 @@
-import React, {useRef,useEffect, useState}  from 'react';
-import * as SockJS from 'sockjs-client';
-import { Client, Message } from '@stomp/stompjs';
+import React, {useEffect, useState}  from 'react';
+import { Client} from '@stomp/stompjs';
 import './App.css';
-import {SwatchesPicker} from "react-color";
 import {Github} from "react-color/lib/components/github/Github";
 import Canvas from "./Canvas";
 
@@ -15,6 +13,8 @@ const App = () => {
     "imageSize": size,
     "pixels":new Array(Math.pow(size,2)).fill([0,0,0,255]),
   })
+
+  const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
     brokerURL: 'ws://localhost:8080/ws',
@@ -30,7 +30,6 @@ const App = () => {
   const callback = (message) => {
     if (message.headers['content-type'] === 'application/octet-stream') { //check if binary
       let newCanvas = {...canvasSettings};
-      console.log(message.binaryBody);
       const b = new Uint8Array(Math.pow(size,2));
       var i = 0;
       for(i = 0; i < Math.pow(size,2)/2; i++){ //Bytes represent 2 colors 1111 1000
@@ -45,19 +44,11 @@ const App = () => {
         newCanvas.pixels[one] = [rgb1.r,rgb1.g,rgb1.b,255];
         newCanvas.pixels[two] = [rgb2.r,rgb2.g,rgb2.b,255];
       }
-      console.log(b);
       setCanvasSettings(newCanvas);
 
-
-    } else if (message.body) {
-      //messagePixelArray
-      let mpa = JSON.parse('[' + message.body + ']')[0];
-      let newCanvas = {...canvasSettings};
-      mpa.map((m) => {
-        let rgb = hexToRgb(swatchColors[m.color]);
-      newCanvas.pixels[m.x+m.y*canvasSettings.imageSize] = [rgb.r,rgb.g,rgb.b,255]; //todo
-      })
-      setCanvasSettings(newCanvas);
+    } else if (message.body) { //if json
+      const m = JSON.parse(message.body);
+      setPixel({...m, "color": hexToRgb(swatchColors[m.color])}); //convert to hex to rgb
     } else {
       console.log("got empty message");
     }
@@ -117,7 +108,9 @@ const App = () => {
 
   return (
     <>
-      <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor}/>
+      <div className={"canvasScaleDiv"}>
+      <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
+      </div>
       <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"}/>
     </>
   );

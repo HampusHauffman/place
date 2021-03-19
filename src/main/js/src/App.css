@@ -1,5 +1,7 @@
 .canvas {
-    height: 8000px;
+
+
+
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -10,6 +12,14 @@
     image-rendering: crisp-edges;
 
     outline: 2px solid gray;;
+
+
+}
+
+.canvasScaleDiv{
+
+    width: 1000px;
+    height: 1000px;
 
 }
 
