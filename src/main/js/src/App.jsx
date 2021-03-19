@@ -9,10 +9,11 @@ import Canvas from "./Canvas";
 
 const App = () => {
 
+  const size = 1000;
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
-    "imageSize": 1000,
-    "pixels":new Array(1000000).fill([0,0,0,255]),
+    "imageSize": size,
+    "pixels":new Array(Math.pow(size,2)).fill([0,0,0,255]),
   })
 
   const [client, setClient] = useState(new Client({
@@ -29,18 +30,20 @@ const App = () => {
   const callback = (message) => {
     if (message.headers['content-type'] === 'application/octet-stream') { //check if binary
       let newCanvas = {...canvasSettings};
-
-      const b = new Uint8Array(1000000);
+      console.log(message.binaryBody);
+      const b = new Uint8Array(Math.pow(size,2));
       var i = 0;
-      for(i = 0; i < message.binaryBody.length; i = i + 2){
-        b[i] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
-        b[i+1] = message.binaryBody[i] & 15;
+      for(i = 0; i < Math.pow(size,2)/2; i++){ //Bytes represent 2 colors 1111 1000
+        let one = i*2;
+        let two = i*2+1;
+        b[one] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
+        b[two] = message.binaryBody[i] & 15;
 
-        let rgb1 = hexToRgb(swatchColors[b[i]]);
-        let rgb2 = hexToRgb(swatchColors[b[i+1]]);
+        let rgb1 = hexToRgb(swatchColors[b[one]]);
+        let rgb2 = hexToRgb(swatchColors[b[i*2+1]]);
 
-        newCanvas.pixels[i] = [rgb1.r,rgb1.g,rgb1.b,255];
-        newCanvas.pixels[i+1] = [rgb2.r,rgb2.g,rgb2.b,255];
+        newCanvas.pixels[one] = [rgb1.r,rgb1.g,rgb1.b,255];
+        newCanvas.pixels[two] = [rgb2.r,rgb2.g,rgb2.b,255];
       }
       console.log(b);
       setCanvasSettings(newCanvas);
@@ -78,7 +81,7 @@ const App = () => {
   },[]);
 
 
-  const [selectedColor, setSelectedColor] = useState(0)
+  const [selectedColor, setSelectedColor] = useState(4)
 
   const swatchOnClick = (obj) =>{
     console.log(swatchColors.indexOf(obj.hex));

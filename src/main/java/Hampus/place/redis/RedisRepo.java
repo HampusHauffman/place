@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import redis.clients.jedis.BinaryJedis;
 import redis.clients.jedis.Jedis;
 
 @Repository
@@ -17,9 +18,11 @@ public class RedisRepo {
   public static int IMAGE_SIZE = 1000;
 
   private Jedis jedis = new Jedis("localhost");
+  private  BinaryJedis binaryJedis = new BinaryJedis("localhost");
 
   public void setPixel(Pixel p){
   int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
+    System.out.println(pp);
     jedis.bitfield(KEY,"SET", "u4", String.valueOf(pp), String.valueOf(p.getColor()));
   }
 
@@ -32,7 +35,7 @@ public class RedisRepo {
   }
 
   public byte[] getAllPixels(){
-    return jedis.get(KEY).getBytes(StandardCharsets.UTF_8);
+    return binaryJedis.get(KEY.getBytes());
   }
 
 }
