@@ -29,12 +29,12 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   },[pixel])
 
   const [canvasStyle, setCanvasStyle] = useState();
+  const [scale, setScale] = useState(1);
 
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);
 
-    setCanvasStyle({...canvasStyle, transform: "scale(40,40)", backgroundColor:"blue"})
-      //transformOrigin: (pixels.x).valueOf() + "px " + (pixels.y).valueOf()+ "px"}
+
 
     client.publish({
       destination:"/pixel",
@@ -42,7 +42,14 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       })
   }
 
-  useEffect(x => (console.log(canvasStyle)),[canvasStyle]);
+  const onWrapperClick = (obj) => {
+
+    const s = scale===1 ? 40 : 1;
+    setScale(scale===1 ? 40 : 1);
+
+    setCanvasStyle({...canvasStyle, transform: "scale(" + s + "," + s + ")",
+      transformOrigin: obj.clientX + "px " + obj.clientY + "px"})
+  }
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -59,8 +66,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
 
   return(
-      <div style={canvasStyle}>
-      <Draggable scale={40}>
+      <div style={canvasStyle} className={"dragWrapper"} onClick={onWrapperClick}>
+      <Draggable scale={scale}>
         <canvas ref={canvasRef}
               onClick={onCanvasClick}
               className={"canvas"}

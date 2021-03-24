@@ -7,9 +7,6 @@
 }
 
 .canvas {
-    transform: scale(20,20);
-    transform-origin: 0 0;
-
     /* Set size to fit screen */
     max-height: 90vh;
     max-width: 90vw;
