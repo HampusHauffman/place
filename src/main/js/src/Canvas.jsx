@@ -1,4 +1,5 @@
-import React, {useRef,useEffect}  from 'react';
+import React, {useRef,useEffect, useState}  from 'react';
+import Draggable from 'react-draggable';
 import './App.css';
 
 
@@ -19,23 +20,29 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   useEffect(() => {
     if(pixel) {
-      console.log(pixel);
       const imageData = new ImageData(
           new Uint8ClampedArray([pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1, 1);
       const canvasObj = canvasRef.current;
       const ctx = canvasObj.getContext("2d");
-      console.log(pixel);
       ctx.putImageData(imageData, pixel.x, pixel.y);
     }
   },[pixel])
 
+  const [canvasStyle, setCanvasStyle] = useState();
+
   const onCanvasClick = (obj) => {
     const pixels = getClickedPixel(obj);
+
+    setCanvasStyle({...canvasStyle, transform: "scale(40,40)", backgroundColor:"blue"})
+      //transformOrigin: (pixels.x).valueOf() + "px " + (pixels.y).valueOf()+ "px"}
+
     client.publish({
       destination:"/pixel",
       body: JSON.stringify({"x":pixels.x, "y":pixels.y, "color":selectedColor})
       })
   }
+
+  useEffect(x => (console.log(canvasStyle)),[canvasStyle]);
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -50,8 +57,18 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     }
   }
 
+
   return(
-      <canvas ref={canvasRef}  onClick={onCanvasClick} className={"canvas"} width={canvasSettings.imageSize} height={canvasSettings.imageSize}/>
+      <div style={canvasStyle}>
+      <Draggable scale={40}>
+        <canvas ref={canvasRef}
+              onClick={onCanvasClick}
+              className={"canvas"}
+              width={canvasSettings.imageSize}
+              height={canvasSettings.imageSize}
+        />
+      </Draggable>
+      </div>
   );
 }
 

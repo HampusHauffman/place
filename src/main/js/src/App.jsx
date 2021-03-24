@@ -18,9 +18,11 @@ const App = () => {
 
   const [client, setClient] = useState(new Client({
     brokerURL: 'ws://localhost:8080/ws',
+    /*
     debug: function (str) {
       console.log(str);
     },
+    */
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
@@ -68,7 +70,6 @@ const App = () => {
 
   useEffect(() => {
     client.activate();
-
   },[]);
 
 
@@ -106,14 +107,16 @@ const App = () => {
     } : null;
   }
 
+
+
   return (
-    <>
-      <div className={"canvasScaleDiv"}>
-      <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
+      <>
+      <div className={"wrapper"}>
+        <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
       </div>
-      <Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"}/>
-    </>
+      </>
   );
 }
 
+      //<Github onChange={swatchOnClick} colors={swatchColors} className={"swatch"} height={"100"}/>
 export default App;

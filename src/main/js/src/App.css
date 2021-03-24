@@ -1,30 +1,36 @@
+
+.wrapper{
+    background-color: black;
+    height: 98vh;
+
+    overflow: hidden;
+}
+
 .canvas {
+    transform: scale(20,20);
+    transform-origin: 0 0;
 
+    /* Set size to fit screen */
+    max-height: 90vh;
+    max-width: 90vw;
 
-
+    /* Center */
+    display: block;
     margin-left: auto;
     margin-right: auto;
-    display: block;
 
+    /* Crisp edges */
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 
-    outline: 2px solid gray;;
-
-
-}
-
-.canvasScaleDiv{
-
-    width: 1000px;
-    height: 1000px;
-
 }
 
 .swatch{
     position: absolute;
-    top: 8px;
-    left: 16px;
+}
+
+body{
+    background-color: gray;
 }
