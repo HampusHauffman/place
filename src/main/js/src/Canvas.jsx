@@ -3,7 +3,7 @@ import Draggable from 'react-draggable';
 import './App.css';
 
 
-const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
+const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings}) => {
 
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
@@ -32,9 +32,26 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const [scale, setScale] = useState(1);
 
   const onCanvasClick = (obj) => {
+    console.log(obj);
+    let s = 1;
+
+    if(scale===1){
+      s = 8;
+      setScale(8);
+    }else if(scale===8) {
+      s = 40;
+      setSwatchSettings((s) => ({...s, show: true}));
+      setScale(40);
+    }else {
+      s = 1;
+      setSwatchSettings((s) => ({...s, show:false}));
+      setScale(1);
+    }
+    setCanvasStyle({...canvasStyle, transform: "scale(" + s + "," + s + ")",
+      transformOrigin: obj.nativeEvent.x + "px " + obj.nativeEvent.y + "px"})
+
+
     const pixels = getClickedPixel(obj);
-
-
 
     client.publish({
       destination:"/pixel",
@@ -42,14 +59,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       })
   }
 
-  const onWrapperClick = (obj) => {
-
-    const s = scale===1 ? 40 : 1;
-    setScale(scale===1 ? 40 : 1);
-
-    setCanvasStyle({...canvasStyle, transform: "scale(" + s + "," + s + ")",
-      transformOrigin: obj.clientX + "px " + obj.clientY + "px"})
-  }
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -66,7 +75,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
 
   return(
-      <div style={canvasStyle} className={"dragWrapper"} onClick={onWrapperClick}>
+      <div style={canvasStyle} className={"dragWrapper"}>
       <Draggable scale={scale}>
         <canvas ref={canvasRef}
               onClick={onCanvasClick}
