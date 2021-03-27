@@ -73,10 +73,10 @@ const App = () => {
   },[]);
 
 
-  const [selectedColor, setSelectedColor] = useState(4)
+  const [selectedColor, setSelectedColor] = useState(-1)
 
   const swatchOnClick = (obj) =>{
-    setSwatchSettings({...swatchSettings, show: false})
+    //setSwatchSettings({...swatchSettings, show: false})
     setSelectedColor(swatchColors.indexOf(obj.hex));
   }
 
@@ -102,6 +102,7 @@ const App = () => {
     show: false,
     x: 0,
     y: 0,
+    action:"z",
   })
 
   const hexToRgb = (hex) => {
@@ -116,15 +117,19 @@ const App = () => {
   return (
       <>
         <div className={"wrapper"}>
-          <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel} setSwatchSettings={setSwatchSettings}/>
+          <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel} setSwatchSettings={setSwatchSettings} swatchSettings={swatchSettings}/>
         </div>
         {swatchSettings.show?
           //<div className={"swatch"} style={{top:swatchSettings.y +18 + "px", left:swatchSettings.x -16 + "px"}}>
             <div className={"swatch"} style={{top:0, left:0}}>
             <Github onChange={swatchOnClick} colors={swatchColors}/>
+              <button onClick={(obj) => {setSwatchSettings({...swatchSettings, action:"x"})}}>x</button>
+              <button>m</button>
+              <button>z</button>
+
         </div> : null}
       </>
   );
-};
+}
 
 export default App;
