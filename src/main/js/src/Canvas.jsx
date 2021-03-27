@@ -3,7 +3,7 @@ import Draggable from 'react-draggable';
 import './App.css';
 
 
-const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings, swatchSettings}) => {
+const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings}) => {
 
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
@@ -79,9 +79,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
 
   }
 
-  useEffect((s) => {
-    console.log(swatchSettings);
-  },[swatchSettings])
 
 
   //Get the clicked pixel
@@ -99,6 +96,12 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
 
 
   return(
+      <>
+        <div style={{position:"fixed", right:"0", top:"0", zIndex:"999"}}>
+        <button>x</button>
+        <button>m</button>
+        <button>z</button>
+        </div>
         <canvas ref={canvasRef}
               style={canvasStyle}
               onClick={onCanvasClick}
@@ -106,7 +109,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
               width={canvasSettings.imageSize}
               height={canvasSettings.imageSize}
         />
-  );
+      </>
+
+);
 }
 
 export default Canvas;
