@@ -1,8 +1,8 @@
 import React, {useEffect, useState}  from 'react';
 import { Client} from '@stomp/stompjs';
 import './App.css';
-import {Github} from "react-color/lib/components/github/Github";
 import Canvas from "./Canvas";
+import {CirclePicker} from "react-color";
 
 
 const App = () => {
@@ -77,7 +77,8 @@ const App = () => {
 
   const swatchOnClick = (obj) =>{
     //setSwatchSettings({...swatchSettings, show: false})
-    setSelectedColor(swatchColors.indexOf(obj.hex));
+    console.log(obj.hex.toUpperCase())
+    setSelectedColor(swatchColors.indexOf(obj.hex.toUpperCase()));
   }
 
   const swatchColors = [
@@ -114,16 +115,26 @@ const App = () => {
     } : null;
   }
 
+
+
   return (
       <>
         <div className={"wrapper"}>
-          <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel} setSwatchSettings={setSwatchSettings}/>
+          <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
         </div>
-        {swatchSettings.show?
-          //<div className={"swatch"} style={{top:swatchSettings.y +18 + "px", left:swatchSettings.x -16 + "px"}}>
-            <div className={"swatch"} style={{top:0, left:0}}>
-            <Github onChange={swatchOnClick} colors={swatchColors}/>
-        </div> : null}
+
+
+
+
+
+        <div className={"swatchWrapper"}>
+          <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"}>O</button>
+          <button onClick={x => {setSelectedColor(-2)}} className={"moveButton"}>M</button>
+          <div className={"swatch"}>
+            <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
+          </div>
+        </div>
+
       </>
   );
 };

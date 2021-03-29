@@ -3,7 +3,7 @@ import Draggable from 'react-draggable';
 import './App.css';
 
 
-const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings}) => {
+const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
@@ -31,19 +31,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
   const [canvasStyle, setCanvasStyle] = useState();
   const [scale, setScale] = useState(1);
 
-  const transformCanvas = (s, x, y) =>{
-
-    if(s===8){
-      setCanvasTransformStyle(s,x,y);
-    }else if(s===40) {
-      setSwatchSettings((s) => ({...s, show: true}));
-      setCanvasTransformStyle(s,x,y);
-    }else {
-      s = 1;
-      setSwatchSettings((s) => ({...s, show:false}));
-      setCanvasTransformStyle(s,0,0);
-    }
-  }
 
   const setCanvasTransformStyle = (s, x, y) =>{
     setCanvasStyle({...canvasStyle, transform: "scale(" + s + "," + s + ") " +  "translate("+x+","+y+")"})
@@ -63,23 +50,23 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
     const x = obj.target.clientWidth/2 - obj.nativeEvent.offsetX + "px"
     const y = obj.target.clientHeight/2 - obj.nativeEvent.offsetY + "px"
 
-    if(scale===1) {
+    if(selectedColor === -2){
+      setCanvasTransformStyle(scale,x,y);
+    }else if(scale===1) {
       setScale(8);
-      transformCanvas(8,x, y)
+      setCanvasTransformStyle(8,x, y)
     }else if(scale===8){
       setScale(40);
-      transformCanvas(40,x, y)
+      setCanvasTransformStyle(40,x, y)
     }else if(scale===40 && selectedColor === -1){
       setScale(1);
-      transformCanvas(1,x, y)
+      setCanvasTransformStyle(1,x, y)
     }else {
       const p = getClickedPixel(obj);
       placePixel(p);
     }
 
   }
-
-
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
@@ -97,11 +84,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel, setSwatchSettings
 
   return(
       <>
-        <div style={{position:"fixed", right:"0", top:"0", zIndex:"999"}}>
-        <button>x</button>
-        <button>m</button>
-        <button>z</button>
-        </div>
         <canvas ref={canvasRef}
               style={canvasStyle}
               onClick={onCanvasClick}

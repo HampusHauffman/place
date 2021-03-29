@@ -8,7 +8,7 @@
 
 .canvas {
     /* Set size to fit screen */
-    max-height: 90vh;
+    max-height: 78vh;
     max-width: 90vw;
 
     /* Center */
@@ -24,11 +24,53 @@
 
 }
 
-.swatch{
+.swatchWrapper{
+    /* Center */
     position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.moveButton{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+
+    background-color: white;
+    margin-left: 22px;
+    margin-right: -6px;
+    margin-bottom: 5px;
+
+    border: 1px solid black;
+}
+
+.swatch{
+
+    background-color: white;
+
+    padding: 10px 10px 10px 20px;
+
+    border-radius: 25px;
+    border: 1px solid black;
+
+    margin-bottom: 10px;
 
 }
 
+.circle-picker{
+    margin: auto;
+    text-align: center;
+
+    width: 80vw !important;
+    max-width: 827px !important;
+}
+
+.swatch > div > span > div{
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
 body{
-    background-color: gray;
+    background-color: black;
 }
