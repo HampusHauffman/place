@@ -76,8 +76,6 @@ const App = () => {
   const [selectedColor, setSelectedColor] = useState(-1)
 
   const swatchOnClick = (obj) =>{
-    //setSwatchSettings({...swatchSettings, show: false})
-    console.log(obj.hex.toUpperCase())
     setSelectedColor(swatchColors.indexOf(obj.hex.toUpperCase()));
   }
 
@@ -115,17 +113,11 @@ const App = () => {
     } : null;
   }
 
-
-
   return (
       <>
         <div className={"wrapper"}>
           <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
         </div>
-
-
-
-
 
         <div className={"swatchWrapper"}>
           <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"}>O</button>
