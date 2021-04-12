@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.BinaryJedis;
@@ -17,8 +18,11 @@ public class RedisRepo {
   public static final String KEY = "place";
   public static int IMAGE_SIZE = 1000;
 
-  private Jedis jedis = new Jedis("localhost");
-  private  BinaryJedis binaryJedis = new BinaryJedis("localhost");
+  @Value("${spring.redis.host}")
+  String redisHost;
+
+  private Jedis jedis = new Jedis(redisHost);
+  private  BinaryJedis binaryJedis = new BinaryJedis(redisHost);
 
   public void setPixel(Pixel p){
   int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);

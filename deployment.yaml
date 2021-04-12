@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: place
+  name: place-deployment
+  namespace: place-namespace
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: place
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: place
+    spec:
+      containers:
+      - image: gcr.io/stately-pulsar-310221/place@sha256:d6c30b377a253c5c141a3861300dbfdf7ce3d64fe56c145824d64d41c56c8c1b
+        name: place-sha256-1
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 500m
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 500m
+
+

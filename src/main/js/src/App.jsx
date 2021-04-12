@@ -17,7 +17,7 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    brokerURL: 'ws://localhost:8080/ws',
+    brokerURL: 'ws://34.77.148.187:8080/ws',
     /*
     debug: function (str) {
       console.log(str);
