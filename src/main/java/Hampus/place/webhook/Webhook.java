@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
+@Slf4j
 public class Webhook {
 
   @Autowired
@@ -37,21 +40,25 @@ public class Webhook {
 
   @GetMapping("/")
   public @ResponseBody String test(){
-    return redisHost;
+    log.info("GetMapping on /");
+    return redisHost + " " +redisRepo.getPixel(0,0);
   }
 
 
   @SneakyThrows
   @SubscribeMapping("/topic/place") //app/subscribe
   public byte[] sendOneTimeMessage() {
-    return redisRepo.getAllPixels();
+    log.info("A subscriber Connected");
+    var allPixels = redisRepo.getAllPixels();
+    log.info("Sending all Pixels: {}", allPixels);
+    return allPixels;
   }
 
   @SneakyThrows
   @MessageMapping("/pixel")
   @SendTo("/topic/place")
   public void pixels(@Payload String pixel)  {
-    System.out.println(pixel);
+    log.info("Pixel: {} was fetched", pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
     redisRepo.setPixel(p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));

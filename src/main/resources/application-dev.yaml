@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: ${REDIS_HOST:10.126.160.3}
+    host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
 
 

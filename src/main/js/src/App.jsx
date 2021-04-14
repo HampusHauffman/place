@@ -17,7 +17,7 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    brokerURL: 'ws://34.77.148.187:8080/ws',
+    brokerURL: 'ws://35.240.61.90:8080/ws',
     /*
     debug: function (str) {
       console.log(str);
@@ -30,6 +30,7 @@ const App = () => {
 
   //STOMP
   const callback = (message) => {
+    console.log(message);
     if (message.headers['content-type'] === 'application/octet-stream') { //check if binary
       let newCanvas = {...canvasSettings};
       const b = new Uint8Array(Math.pow(size,2));
