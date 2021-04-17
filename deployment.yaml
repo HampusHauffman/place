@@ -23,7 +23,7 @@ spec:
         app: place
     spec:
       containers:
-      - image: gcr.io/stately-pulsar-310221/place@sha256:ac93d930a471f9b9f1d5dc3e89a5870ce1987c77bf50450ced7c4d8d959ca783
+      - image: gcr.io/stately-pulsar-310221/place@sha256:a70396c6905cec36c48a4baf656a1d9b7199fec57d780ff59237031ad14c98a7
         name: place-sha256-1
         resources:
           limits:

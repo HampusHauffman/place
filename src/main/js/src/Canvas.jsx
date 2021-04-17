@@ -28,6 +28,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     }
   },[pixel])
 
+
   const [canvasStyle, setCanvasStyle] = useState();
   const [scale, setScale] = useState(1);
 
@@ -76,20 +77,36 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       setCanvasTransformStyle(1)
     }else {
       const p = getClickedPixel(obj);
-      console.log(x + " " + y);
-      console.log(p);
       placePixel(p);
     }
 
   }
 
+  //This is a hacky version of making sure canvas doesnt use subpixels...
+  const [canvasWidthStyle, setCanvasWidthStyle] = useState({});
+  const handleResize = (obj) => {
+    const w = obj.target.innerWidth;
+    const h = obj.target.innerHeight;
+    if(w <= h){
+      setCanvasWidthStyle({width: Math.round(w * 0.8),
+        marginLeft: Math.round(w * 0.1)});
+    }else{
+      setCanvasWidthStyle({height: Math.round(h * 0.8)});
+    }
+  }
+  useEffect(() => {
+      window.addEventListener('resize', handleResize);
+      handleResize({target:{innerWidth:window.innerWidth, innerHeight:window.innerHeight}})
+  },[]);
+
+
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
-    console.log(evt);
     var canvas = canvasRef.current;
     var rect = canvas.getBoundingClientRect(), // abs. size of element
         scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
         scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+
     return {
       x: Math.floor((evt.clientX - rect.left) * scaleX),   // scale mouse coordinates after they have
       y: Math.floor((evt.clientY - rect.top) * scaleY)   // been adjusted to be relative to element
@@ -106,7 +123,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                 width={canvasSettings.imageSize}
                 height={canvasSettings.imageSize}
                 onClick={onCanvasClick}
-
+                  style={canvasWidthStyle}
           />
         </Draggable>
         </div>
