@@ -3,6 +3,7 @@ import { Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
+import {Col, Row} from "react-bootstrap";
 
 
 const App = () => {
@@ -17,8 +18,8 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    //brokerURL: 'ws://35.240.61.90:8080/ws',
-    brokerURL: 'ws://localhost:8080/ws',
+    brokerURL: 'ws://35.240.61.90:8080/ws',
+    //brokerURL: 'ws://localhost:8080/ws',
     /*
     debug: function (str) {
       console.log(str);
@@ -116,16 +117,23 @@ const App = () => {
 
   return (
       <>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+            integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+            crossOrigin="anonymous"
+        />
+
         <div className={"wrapper"}>
           <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
         </div>
 
-        <div className={"swatchWrapper"}>
-          <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"}>O</button>
-          <div className={"swatch"}>
-            <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
-          </div>
-        </div>
+
+            <div className={"swatchWrapper"}>
+              <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"} style={{backgroundColor: swatchColors[selectedColor]}}>🔎</button>
+                <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
+            </div>
+
 
       </>
   );

@@ -31,6 +31,7 @@
     bottom: 0;
     left: 50%;
     transform: translate(-50%, 0);
+    margin-bottom: 20px;
 }
 
 .moveButton{
@@ -39,25 +40,14 @@
     border-radius: 50%;
 
     background-color: white;
-    margin-left: 22px;
     margin-right: -6px;
-    margin-bottom: 5px;
+    margin-bottom: 13px;
 
-    border: 1px solid black;
+    border: 2px solid black;
+
+    font-size: 20px;
 }
 
-.swatch{
-
-    background-color: white;
-
-    padding: 10px 10px 10px 20px;
-
-    border-radius: 25px;
-    border: 1px solid black;
-
-    margin-bottom: 10px;
-
-}
 
 .circle-picker{
     margin: auto;
@@ -67,10 +57,12 @@
     max-width: 827px !important;
 }
 
-.swatch > div > span > div{
+.swatchWrapper  > div > span > div{
     border-radius: 50%;
-    border: 1px solid black;
+    border: 2px solid black;
 }
+
+
 
 body{
     background-color: black;
