@@ -55,13 +55,24 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   const [xy, setXy] = useState(null);
 
+  const [wasDragged, setWasDragged] = useState(false);
+
+  const drag = (obj) => {
+    setWasDragged(true);
+  }
+
   const onCanvasClick = (obj) => {
 
     const x = obj.target.clientWidth/2 - obj.nativeEvent.offsetX
     const y = obj.target.clientHeight/2 - obj.nativeEvent.offsetY
 
+    console.log(wasDragged)
+    if(wasDragged){
+      setXy(null);
+      setWasDragged(false);
+      return;
+    }
 
-    if(selectedColor === -2) return;
     if(selectedColor === -1){
       setXy({x: x, y:y});
     }
@@ -114,15 +125,17 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   }
 
 
+
     return(
       <>
         <div style={canvasStyle}>
-        <Draggable scale={scale} position={xy} disabled={selectedColor!==-2}>
+        <Draggable scale={scale} position={xy} disabled={false} onDrag={drag}>
           <canvas ref={canvasRef}
                 className={"canvas"}
                 width={canvasSettings.imageSize}
                 height={canvasSettings.imageSize}
                 onClick={onCanvasClick}
+                  onTouchStart={onCanvasClick}
                   style={canvasWidthStyle}
           />
         </Draggable>
