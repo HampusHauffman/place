@@ -38,7 +38,6 @@ public class RedisRepo {
 
   public void setPixel(Pixel p){
   int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
-    System.out.println(pp);
     jedis.bitfield(KEY,"SET", "u4", String.valueOf(pp), String.valueOf(p.getColor()));
   }
 

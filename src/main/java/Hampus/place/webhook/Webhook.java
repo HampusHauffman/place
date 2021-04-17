@@ -50,7 +50,6 @@ public class Webhook {
   public byte[] sendOneTimeMessage() {
     log.info("A subscriber Connected");
     var allPixels = redisRepo.getAllPixels();
-    log.info("Sending all Pixels: {}", allPixels);
     return allPixels;
   }
 
