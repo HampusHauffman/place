@@ -5,7 +5,7 @@ import './App.css';
 
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
-  //Reference to the mutable canvas context value
+  //Reference to the mutable canvas context value!
   const canvasRef = useRef(null);
 
   useEffect(() => {
