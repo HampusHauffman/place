@@ -67,13 +67,12 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     const x = obj.target.clientWidth/2 - obj.nativeEvent.offsetX
     const y = obj.target.clientHeight/2 - obj.nativeEvent.offsetY
 
-    console.log(draged)
+
     if(draged){
 
       draged = false
       return;
     }
-
 
     if(selectedColor === -1){
       setXy({x: x, y:y});
@@ -126,7 +125,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     }
   }
 
-
+const t = (o) => {
+    console.log(o)
+}
 
     return(
       <>
@@ -137,7 +138,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                 width={canvasSettings.imageSize}
                 height={canvasSettings.imageSize}
                 onClick={onCanvasClick}
-                  style={canvasWidthStyle}
+                onTouchStart={onCanvasClick}
+                style={canvasWidthStyle}
           />
         </Draggable>
         </div>
