@@ -16,6 +16,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext("2d");
     ctx.putImageData(imageData,0,0);
+    handleResize({target:{innerWidth:window.innerWidth, innerHeight:window.innerHeight}})
+
   },[canvasSettings])
 
   useEffect(() => {
@@ -99,16 +101,17 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const handleResize = (obj) => {
     const w = obj.target.innerWidth;
     const h = obj.target.innerHeight;
+    const cw = canvasRef.current.getBoundingClientRect().width
     if(w <= h){
       setCanvasWidthStyle({width: Math.round(w * 0.8),
         marginLeft: Math.round(w * 0.1)});
     }else{
-      setCanvasWidthStyle({height: Math.round(h * 0.8)});
+      setCanvasWidthStyle({width: Math.round(h * 0.8),
+        marginLeft: Math.round((w/2)-(cw/2))});
     }
   }
   useEffect(() => {
       window.addEventListener('resize', handleResize);
-      handleResize({target:{innerWidth:window.innerWidth, innerHeight:window.innerHeight}})
   },[]);
 
 

@@ -1,16 +1,17 @@
 package Hampus.place.webhook;
 
 import Hampus.place.Pixel;
+import Hampus.place.redis.RedisMessageSubscriber;
 import Hampus.place.redis.RedisRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -32,6 +33,12 @@ public class Webhook {
 
   @Autowired
   RedisRepo redisRepo;
+
+  @Autowired
+  RedisMessageSubscriber redisMessageSubscriber;
+
+  @Autowired
+  private ChannelTopic topic;
 
   ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,5 +69,26 @@ public class Webhook {
     redisRepo.setPixel(p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
   }
+
+  @PostConstruct
+  private void setupSub(){
+    log.info("Setup Subscription");
+    JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+
+    RedisMessageListenerContainer container
+        = new RedisMessageListenerContainer();
+    container.setConnectionFactory(jedisConnectionFactory);
+    container.addMessageListener(redisMessageSubscriber, topic);
+    container.afterPropertiesSet();
+    container.start();
+    log.info(String.valueOf(container.isRunning()));
+  }
+
+  @Scheduled(fixedDelay=1000)
+  private void checkMessages(){
+    log.info("Checking messages");
+    log.info(String.valueOf(RedisMessageSubscriber.messageList));
+  }
+
 
 }
