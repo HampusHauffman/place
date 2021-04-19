@@ -81,13 +81,6 @@ public class Webhook {
     container.addMessageListener(redisMessageSubscriber, topic);
     container.afterPropertiesSet();
     container.start();
-    log.info(String.valueOf(container.isRunning()));
-  }
-
-  @Scheduled(fixedDelay=1000)
-  private void checkMessages(){
-    log.info("Checking messages");
-    log.info(String.valueOf(RedisMessageSubscriber.messageList));
   }
 
 
