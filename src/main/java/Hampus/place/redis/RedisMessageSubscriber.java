@@ -1,10 +1,12 @@
 package Hampus.place.redis;
 
 import Hampus.place.Pixel;
+import Hampus.place.webhook.Webhook;
 import com.fasterxml.jackson.core.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -19,12 +21,15 @@ public class RedisMessageSubscriber implements MessageListener {
 
   private Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer(Pixel.class);
 
+  @Autowired
+  Webhook webhook;
 
   public void onMessage(Message message, byte[] pattern) {
 
     messageList.add(message.toString());
-    var p = serializer.deserialize(message.getBody());
-    log.info("Message received: {}", p);
+    Pixel p = (Pixel) serializer.deserialize(message.getBody());
+    log.info("Message received from Redis sub: {}", p);
+    webhook.sendPixel(p);
   }
 }
 

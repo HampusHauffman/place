@@ -55,12 +55,16 @@ public class Webhook {
 
   @SneakyThrows
   @MessageMapping("/pixel")
-  @SendTo("/topic/place")
   public void pixels(@Payload String pixel)  {
-    log.info("Got a Pixel: {} ", pixel);
+    log.info("Got a Pixel from client: {} ", pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
-    redisMessagePublisher.publish(p);
     redisRepo.setPixel(p);
+    redisMessagePublisher.publish(p);
+  }
+
+  @SneakyThrows
+  public void sendPixel(Pixel p){
+    log.info("Sending Pixel: {}", p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
   }
 
