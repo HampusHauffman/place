@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,8 @@ public class RedisMessageSubscriber implements MessageListener {
 
   public static List<String> messageList = new ArrayList<>();
 
-  private Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer(Pixel.class);
+  @Autowired
+  private RedisTemplate<String, Pixel> redisTemplate;
 
   @Autowired
   Webhook webhook;
@@ -27,7 +29,7 @@ public class RedisMessageSubscriber implements MessageListener {
   public void onMessage(Message message, byte[] pattern) {
 
     messageList.add(message.toString());
-    Pixel p = (Pixel) serializer.deserialize(message.getBody());
+    Pixel p = (Pixel)redisTemplate.getValueSerializer().deserialize(message.getBody());
     log.info("Message received from Redis sub: {}", p);
     webhook.sendPixel(p);
   }
