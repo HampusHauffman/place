@@ -15,17 +15,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisMessagePublisher{
 
+  @Autowired
   private RedisTemplate<String, Pixel> redisTemplate;
+
+  @Autowired
+  JedisConnectionFactory jedisConnectionFactory;
 
   @Autowired
   private ChannelTopic topic;
 
-  public RedisMessagePublisher() {
-    redisTemplate = new RedisTemplate<>();
-    redisTemplate.setConnectionFactory(new JedisConnectionFactory());
-    redisTemplate.afterPropertiesSet();
-    redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(Pixel.class));
-  }
 
   public void publish(Pixel p) {
     log.info("Publishing a pixel to redis: {}", p);
