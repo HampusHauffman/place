@@ -3,7 +3,10 @@ spring:
     host: ${REDIS_HOST:10.126.160.3}
     port: ${REDIS_PORT:6379}
     database: 0
-
-
-
+    jedis:
+      pool:
+        min-idle: 2
+        max-idle: 10
+        max-wait: 10ms
+        max-active: 10
 

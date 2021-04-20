@@ -6,7 +6,18 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.BitFieldSubCommands;
+import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldGetBuilder;
+import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldSubCommand;
+import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldType;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.BinaryJedis;
@@ -14,59 +25,54 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+
+/*** Manages the db containing all the pixels async with redis.
+ * RedisTemplate allows utilization of connection pools configured in application.yaml
+ */
 @Repository
 @Component
+@Slf4j
 public class RedisRepo {
 
   public static final String KEY = "place";
   public static int IMAGE_SIZE = 1000;
 
 
+  @Autowired
+  private RedisTemplate<String, Pixel> redisTemplate;
 
-  private Jedis jedis;
-  private  BinaryJedis binaryJedis;
+  private BitFieldSubCommands bitFieldSubCommands = BitFieldSubCommands.create();
 
-  final JedisPoolConfig poolConfig = buildPoolConfig();
-  JedisPool jedisPool;
-
-
-  public RedisRepo(@Value("${spring.redis.host}") String redisHost){
-    jedis  = new Jedis(redisHost);
-    binaryJedis  = new BinaryJedis(redisHost);
-    jedisPool = new JedisPool(poolConfig, "localhost");
-  }
 
   public void setPixel(Pixel p){
-  int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
-    jedis.bitfield(KEY,"SET", "u4", String.valueOf(pp), String.valueOf(p.getColor()));
+    int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
+
+    BitFieldGetBuilder bitFieldGetBuilder = bitFieldSubCommands.get(BitFieldType.unsigned(4));
+
+    redisTemplate.execute((RedisCallback<Void>) connection -> {
+      connection.bitField(KEY.getBytes(),bitFieldGetBuilder.valueAt(pp));
+      return null;
+    });
+
   }
 
   public Pixel getPixel(int x, int y){
     //To start redis: redis-server /usr/local/etc/redis.conf
-    int pp = (x+y*IMAGE_SIZE)*4;
-    List<Long> l = jedis.bitfield(KEY,
-        "GET", "u4", String.valueOf(pp));
+    long pp = (x+y*IMAGE_SIZE)*4;
+
+    BitFieldGetBuilder bitFieldGetBuilder = bitFieldSubCommands.get(BitFieldType.unsigned(4));
+
+    List<Long> l = redisTemplate.execute((RedisCallback<List<Long>>) connection -> {
+      return connection.bitField(KEY.getBytes(),bitFieldGetBuilder.valueAt(pp));
+    });
+
     return Pixel.builder().color(l.get(0).intValue()).x(x).y(y).build();
   }
 
   public byte[] getAllPixels(){
-    return binaryJedis.get(KEY.getBytes());
+    return redisTemplate.execute((RedisCallback<byte[]>) connection -> connection.get(KEY.getBytes()));
   }
 
 
-  private JedisPoolConfig buildPoolConfig() {
-    final JedisPoolConfig poolConfig = new JedisPoolConfig();
-    poolConfig.setMaxTotal(128);
-    poolConfig.setMaxIdle(128);
-    poolConfig.setMinIdle(16);
-    poolConfig.setTestOnBorrow(true);
-    poolConfig.setTestOnReturn(true);
-    poolConfig.setTestWhileIdle(true);
-    poolConfig.setMinEvictableIdleTimeMillis(Duration.ofSeconds(60).toMillis());
-    poolConfig.setTimeBetweenEvictionRunsMillis(Duration.ofSeconds(30).toMillis());
-    poolConfig.setNumTestsPerEvictionRun(3);
-    poolConfig.setBlockWhenExhausted(true);
-    return poolConfig;
-  }
 
 }
