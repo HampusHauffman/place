@@ -59,7 +59,7 @@ public class Webhook {
   public void pixels(@Payload String pixel)  {
     log.info("Got a Pixel: {} ", pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
-    redisMessagePublisher.publish(p.toString());
+    redisMessagePublisher.publish(p);
     redisRepo.setPixel(p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
   }

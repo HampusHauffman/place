@@ -1,4 +1,7 @@
 package Hampus.place;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +14,8 @@ import lombok.Value;
 @Value(staticConstructor = "of")
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class Pixel {
+@JsonSerialize
+public class Pixel{
   int color;
   int x;
   int y;
