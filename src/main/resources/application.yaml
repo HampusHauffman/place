@@ -9,4 +9,7 @@ spring:
         max-idle: 10
         max-wait: 10ms
         max-active: 10
+security:
+  basic:
+    enabled: false
 

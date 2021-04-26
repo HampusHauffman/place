@@ -1,8 +1,8 @@
 ### TODO:
 * ~~Clicking pixel is accurate~~
-* Redis Pub/Sub
+* ~~Redis Pub/Sub~~
+* ~~Redis connection pool~~
 * Touch
-* Redis connection pool
 * Buy domain
     * pxl.place
 * GO LIVE!

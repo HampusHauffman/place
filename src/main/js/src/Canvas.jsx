@@ -53,6 +53,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     if(selectedColor !== -1){
       setXy(null);
     }
+
   }, [selectedColor])
 
   const [xy, setXy] = useState(null);

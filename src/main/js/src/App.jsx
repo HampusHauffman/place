@@ -18,8 +18,8 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    //brokerURL: 'ws://35.240.61.90:8080/ws',
-    brokerURL: 'ws://localhost:8080/ws',
+    brokerURL: 'ws://35.240.61.90:8080/ws',
+    //brokerURL: 'ws://localhost:8080/ws',
     /*
     debug: function (str) {
       console.log(str);
@@ -125,10 +125,12 @@ const App = () => {
         </div>
 
 
-            <div className={"swatchWrapper"}>
+        <div className={"buttonWrapper"}>
+            <div className={"buttons"}>
               <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"} style={{backgroundColor: swatchColors[selectedColor]}}>🔎</button>
                 <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
             </div>
+        </div>
 
 
       </>

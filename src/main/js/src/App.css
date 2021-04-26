@@ -25,7 +25,8 @@
 
 }
 
-.swatchWrapper{
+
+.buttons{
     /* Center */
     position: absolute;
     bottom: 0;
@@ -46,6 +47,13 @@
     border: 2px solid black;
 
     font-size: 20px;
+
+    transition: all .1s ease-in-out;
+
+}
+
+.moveButton:hover {
+    transform: scale(1.2);
 }
 
 
@@ -54,10 +62,12 @@
     text-align: center;
 
     width: 80vw !important;
-    max-width: 827px !important;
+    max-width: 848px !important;
+
+
 }
 
-.swatchWrapper  > div > span > div{
+.buttons  > div > span > div{
     border-radius: 50%;
     border: 2px solid black;
 }
