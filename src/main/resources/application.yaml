@@ -13,3 +13,5 @@ security:
   basic:
     enabled: false
 
+allowedOrigin: ${ALLOWED_ORIGIN:https://pxl.place}
+

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    autopilot.gke.io/resource-adjustment: '{"input":{"containers":[{"limits":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"2Gi"},"requests":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"500M"}}]},"output":{"containers":[{"limits":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"536870912"},"requests":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"536870912"}}]},"modified":true}'
+    deployment.kubernetes.io/revision: "3"
+  labels:
+    app: place-deployment
+  name: place-deployment
+  namespace: place-namespace
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: place-deployment
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: place-deployment
+    spec:
+      containers:
+      - image: gcr.io/stately-pulsar-310221/place@sha256:bc289dfff27f75ed80e641e4a1fb1707850054d844c21582894a1e70a9d5d3f1
+        imagePullPolicy: IfNotPresent
+        name: place-sha256-1
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: "536870912"
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: "536870912"

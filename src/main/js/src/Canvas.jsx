@@ -16,6 +16,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext("2d");
     ctx.putImageData(imageData,0,0);
+
     handleResize({target:{innerWidth:window.innerWidth, innerHeight:window.innerHeight}})
 
   },[canvasSettings])
@@ -49,36 +50,44 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     })
   }
 
-  useEffect(x => {
-    if(selectedColor !== -1){
-      setXy(null);
-    }
+  let [xy, setXy] = useState(null)
 
-  }, [selectedColor])
+  let dragged = false;
 
-  const [xy, setXy] = useState(null);
+  const startTouch = useRef(null);
 
-  let draged = false;
+  let dragCount = 0;
 
   const drag = (obj) => {
-    draged = true;
-    setXy(null);
+    if(dragCount++ > 3) { //logic so you can drag a tiny bit and still place pixels
+      dragged = true;
+      setXy(null);
+    }
   }
 
-  const onCanvasClick = (obj) => {
-
-    const x = obj.target.clientWidth/2 - obj.nativeEvent.offsetX
-    const y = obj.target.clientHeight/2 - obj.nativeEvent.offsetY
-
-
-    if(draged){
-
-      draged = false
-      return;
+  const mouseEvent = (e, obj) => {
+    if(e.targetTouches) {
+      startTouch.current = e.targetTouches[0];
     }
+  };
 
-    if(selectedColor === -1){
-      setXy({x: x, y:y});
+  const onCanvasClick = (e, obj) => {
+    let x;
+    let y;
+
+    var rect = e.target.getBoundingClientRect();
+
+    x = e.target.clientWidth/2 - ((rect.width/(1000*scale)) * getClickedPixel(e).x)
+    y = e.target.clientHeight/2 - ((rect.height/(1000*scale)) * getClickedPixel(e).y)
+
+
+    if(dragged){
+      dragged = false
+      dragCount = 0;
+      setXy (null);
+      return;
+    }else if(selectedColor === -1){
+      setXy ({x:x,y:y})
     }
 
     if(scale===1) {
@@ -91,7 +100,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       setScale(1);
       setCanvasTransformStyle(1)
     }else {
-      const p = getClickedPixel(obj);
+      const p = getClickedPixel(e);
       placePixel(p);
     }
 
@@ -115,7 +124,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       window.addEventListener('resize', handleResize);
   },[]);
 
-
   //Get the clicked pixel
   const getClickedPixel = (evt) => {
     var canvas = canvasRef.current;
@@ -123,26 +131,24 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
         scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
         scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
 
+    const cX = evt.clientX ? evt.clientX : evt.changedTouches[0].clientX;
+    const cY = evt.clientY ? evt.clientY : evt.changedTouches[0].clientY;
     return {
-      x: Math.floor((evt.clientX - rect.left) * scaleX),   // scale mouse coordinates after they have
-      y: Math.floor((evt.clientY - rect.top) * scaleY)   // been adjusted to be relative to element
+      x: Math.floor((cX - rect.left) * scaleX),   // scale mouse coordinates after they have
+      y: Math.floor((cY - rect.top) * scaleY)   // been adjusted to be relative to element
     }
   }
 
-const t = (o) => {
-    console.log(o)
-}
 
     return(
       <>
         <div style={canvasStyle}>
-        <Draggable scale={scale} position={xy} disabled={selectedColor>=0 && scale === 40} onDrag={drag}>
-          <canvas ref={canvasRef}
+        <Draggable nodeRef={canvasRef} scale={scale} position={xy} onDrag={drag} onStop={onCanvasClick} onStart={mouseEvent}>
+          <canvas
+                ref={canvasRef}
                 className={"canvas"}
                 width={canvasSettings.imageSize}
                 height={canvasSettings.imageSize}
-                onClick={onCanvasClick}
-                onTouchStart={onCanvasClick}
                 style={canvasWidthStyle}
           />
         </Draggable>

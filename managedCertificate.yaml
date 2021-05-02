@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: place-managed-cert
+spec:
+  domains:
+    - api.pxl.place

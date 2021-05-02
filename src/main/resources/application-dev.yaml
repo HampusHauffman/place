@@ -3,4 +3,4 @@ spring:
     host: ${REDIS_HOST:127.0.0.1}
     port: ${REDIS_PORT:6379}
 
-
+allowedOrigin: ${ALLOWED_ORIGIN:http://localhost:3000}

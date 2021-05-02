@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldGetBuilder;
+import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldSetBuilder;
 import org.springframework.data.redis.connection.BitFieldSubCommands.BitFieldType;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,10 +36,10 @@ public class RedisRepo {
   public void setPixel(Pixel p){
     int pp = ((p.getX()+p.getY()*IMAGE_SIZE)*4);
 
-    BitFieldGetBuilder bitFieldGetBuilder = bitFieldSubCommands.get(BitFieldType.unsigned(4));
+    BitFieldSetBuilder bitFieldSetBuilder = bitFieldSubCommands.set(BitFieldType.unsigned(4));
 
     redisTemplate.execute((RedisCallback<Void>) connection -> {
-      connection.bitField(KEY.getBytes(),bitFieldGetBuilder.valueAt(pp));
+      connection.bitField(KEY.getBytes(),bitFieldSetBuilder.valueAt(pp).to(p.getColor()));
       return null;
     });
 
@@ -50,15 +51,17 @@ public class RedisRepo {
 
     BitFieldGetBuilder bitFieldGetBuilder = bitFieldSubCommands.get(BitFieldType.unsigned(4));
 
-    List<Long> l = redisTemplate.execute((RedisCallback<List<Long>>) connection -> {
-      return connection.bitField(KEY.getBytes(),bitFieldGetBuilder.valueAt(pp));
-    });
+    List<Long> l = redisTemplate.execute((RedisCallback<List<Long>>) connection ->
+        connection.bitField(KEY.getBytes(),bitFieldGetBuilder.valueAt(pp))
+    );
 
     return Pixel.builder().color(l.get(0).intValue()).x(x).y(y).build();
   }
 
   public byte[] getAllPixels(){
-    return redisTemplate.execute((RedisCallback<byte[]>) connection -> connection.get(KEY.getBytes()));
+    return redisTemplate.execute((RedisCallback<byte[]>) connection ->
+        connection.getRange(KEY.getBytes(),0,499999)
+    );
   }
 
 

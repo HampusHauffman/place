@@ -3,7 +3,6 @@ import { Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
-import {Col, Row} from "react-bootstrap";
 
 
 const App = () => {
@@ -18,44 +17,48 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    brokerURL: 'ws://35.240.61.90:8080/ws',
-    //brokerURL: 'ws://localhost:8080/ws',
-    /*
+    //brokerURL: 'wss://place-run-qsjhjkmw7a-ew.a.run.app/ws',
+    brokerURL: 'ws://localhost:8080/ws',
+
     debug: function (str) {
-      console.log(str);
+      //console.log(str);
     },
-    */
-    reconnectDelay: 5000,
+
+    reconnectDelay: 10,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
   }));
 
+  const handleBinaryMessage = (message) => {
+    let newCanvas = {...canvasSettings};
+    const b = new Uint8Array(Math.pow(size,2));
+    let i = 0;
+
+    for(i; i < Math.pow(size,2)/2; i++){ //Bytes represent 2 colors 1111 1000
+      let one = i*2;
+      let two = i*2+1;
+      b[one] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
+      b[two] = message.binaryBody[i] & 15;
+
+      let rgb1 = hexToRgb(swatchColors[b[one]]);
+      let rgb2 = hexToRgb(swatchColors[b[i*2+1]]);
+
+      newCanvas.pixels[one] = [rgb1.r,rgb1.g,rgb1.b,255];
+      newCanvas.pixels[two] = [rgb2.r,rgb2.g,rgb2.b,255];
+    }
+    setCanvasSettings(newCanvas);
+
+  }
+
   //STOMP
   const callback = (message) => {
     if (message.headers['content-type'] === 'application/octet-stream') { //check if binary
-      let newCanvas = {...canvasSettings};
-      const b = new Uint8Array(Math.pow(size,2));
-      var i = 0;
-      for(i = 0; i < Math.pow(size,2)/2; i++){ //Bytes represent 2 colors 1111 1000
-        let one = i*2;
-        let two = i*2+1;
-        b[one] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
-        b[two] = message.binaryBody[i] & 15;
-
-        let rgb1 = hexToRgb(swatchColors[b[one]]);
-        let rgb2 = hexToRgb(swatchColors[b[i*2+1]]);
-
-        newCanvas.pixels[one] = [rgb1.r,rgb1.g,rgb1.b,255];
-        newCanvas.pixels[two] = [rgb2.r,rgb2.g,rgb2.b,255];
-      }
-      setCanvasSettings(newCanvas);
-
+      handleBinaryMessage(message);
     } else if (message.body) { //if json
       const m = JSON.parse(message.body);
       setPixel({...m, "color": hexToRgb(swatchColors[m.color])}); //convert to hex to rgb
-    } else {
-      console.log("got empty message");
     }
+    client.ack(message.headers['message-id'],message.headers.subscription); //dont know if i neeed to do this
 
   };
 
@@ -73,7 +76,6 @@ const App = () => {
   useEffect(() => {
     client.activate();
   },[]);
-
 
   const [selectedColor, setSelectedColor] = useState(-1)
 
@@ -99,13 +101,6 @@ const App = () => {
     '#CF6EE4',
     '#820080',];
 
-  const [swatchSettings, setSwatchSettings] = useState({
-    show: false,
-    x: 0,
-    y: 0,
-  })
-
-
   const hexToRgb = (hex) => {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -119,11 +114,9 @@ const App = () => {
       <>
         <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0' />
 
-
         <div className={"wrapper"}>
           <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
         </div>
-
 
         <div className={"buttonWrapper"}>
             <div className={"buttons"}>
