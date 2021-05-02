@@ -5,6 +5,7 @@ import './App.css';
 
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
+
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
@@ -98,6 +99,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       setCanvasTransformStyle(40)
     }else if(scale===40 && selectedColor === -1){
       setScale(1);
+      setXy({x:0,y:0})
       setCanvasTransformStyle(1)
     }else {
       const p = getClickedPixel(e);
@@ -122,7 +124,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   }
   useEffect(() => {
       window.addEventListener('resize', handleResize);
-  },[]);
+  },[canvasRef]);
 
   //Get the clicked pixel
   const getClickedPixel = (evt) => {

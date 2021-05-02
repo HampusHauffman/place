@@ -120,11 +120,11 @@ const App = () => {
 
         <div className={"buttonWrapper"}>
             <div className={"buttons"}>
-              <button onClick={x => {setSelectedColor(-1)}} className={"moveButton"} style={{backgroundColor: swatchColors[selectedColor]}}>🔎</button>
                 <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
             </div>
         </div>
 
+        <button onClick={x => {setSelectedColor(-1)}} className={"extraButton"} style={{backgroundColor: swatchColors[selectedColor]}}>🔎</button>
 
       </>
   );

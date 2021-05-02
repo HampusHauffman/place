@@ -10,8 +10,6 @@
     /* Set size to fit screen */
     display: block;
 
-    margin-left: auto;
-    margin-right: auto;
 
     /* Center */
 
@@ -35,14 +33,16 @@
     margin-bottom: 20px;
 }
 
-.moveButton{
-    width: 35px;
-    height: 35px;
+.extraButton{
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
 
     background-color: white;
-    margin-right: -6px;
-    margin-bottom: 13px;
+
+    position: absolute;
+    top: 20px;
+    left: 20px;
 
     border: 2px solid black;
 
@@ -52,7 +52,11 @@
 
 }
 
-.moveButton:hover {
+.resetButton{
+    top: 80px;
+}
+
+.extraButton:hover {
     transform: scale(1.2);
 }
 
@@ -63,6 +67,7 @@
 
     width: 80vw !important;
     max-width: 848px !important;
+
 
 
 }
