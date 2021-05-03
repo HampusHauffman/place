@@ -16,6 +16,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     //Get context for canvas
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
     ctx.putImageData(imageData,0,0);
 
     handleResize({target:{innerWidth:window.innerWidth, innerHeight:window.innerHeight}})
@@ -111,17 +112,24 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   //This is a hacky version of making sure canvas doesnt use subpixels...
   const [canvasWidthStyle, setCanvasWidthStyle] = useState({});
   const handleResize = (obj) => {
+    console.log(obj)
     const w = obj.target.innerWidth;
     const h = obj.target.innerHeight;
-    const cw = canvasRef.current.getBoundingClientRect().width
+    const cw = canvasRef.current.getBoundingClientRect().width;
     if(w <= h){
-      setCanvasWidthStyle({width: Math.round(w * 0.8),
-        marginLeft: Math.round(w * 0.1)});
+      setCanvasWidthStyle({
+        marginLeft: Math.floor(w * 0.1),
+        width: Math.floor(w * 0.8),
+      });
     }else{
-      setCanvasWidthStyle({width: Math.round(h * 0.8),
-        marginLeft: Math.round((w/2)-(cw/2))});
+      setCanvasWidthStyle({
+        marginLeft: Math.floor((w/2)-(cw/2)),
+        width: Math.floor(h * 0.8),
+      });
     }
   }
+
+
   useEffect(() => {
       window.addEventListener('resize', handleResize);
   },[canvasRef]);

@@ -7,18 +7,22 @@
 }
 
 .canvas {
-    /* Set size to fit screen */
+    /* Center */
     display: block;
 
-
-    /* Center */
-
+    position: relative;
 
     /* Crisp edges */
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+
+    filter: none;
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='0');
 
 
 }

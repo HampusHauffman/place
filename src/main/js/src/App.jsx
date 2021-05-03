@@ -17,8 +17,8 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    //brokerURL: 'wss://place-run-qsjhjkmw7a-ew.a.run.app/ws',
-    brokerURL: 'ws://localhost:8080/ws',
+    brokerURL: 'wss://place-run-qsjhjkmw7a-ew.a.run.app/ws',
+    //brokerURL: 'ws://localhost:8080/ws',
 
     debug: function (str) {
       //console.log(str);
