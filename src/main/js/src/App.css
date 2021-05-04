@@ -52,12 +52,16 @@
 
     transition: all .1s ease-in-out;
 
+    z-index: 1;
 }
 
 .resetButton{
     top: 80px;
 }
 
+.resetButton:hover{
+    transform: scale(1.2);
+}
 .extraButton:hover {
     transform: scale(1.2);
 }

@@ -1,5 +1,4 @@
-import React, {useRef,useEffect, useState}  from 'react';
-import Draggable from 'react-draggable';
+import React, {useRef, useEffect, useState, createRef} from 'react';
 import './App.css';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
@@ -33,13 +32,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   },[pixel])
 
 
-  const [scale, setScale] = useState(1);
-
-
-  const setCanvasTransformStyle = (s) =>{
-    //setCanvasStyle({...canvasStyle, transform: "scale(" + s + "," + s + ")"})
-  }
-
   const placePixel = (p) => {
     if(selectedColor === -1){
       return;
@@ -53,13 +45,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
 
   const onCanvasClick = (e, obj) => {
-    let x;
-    let y;
-
-    var rect = e.target.getBoundingClientRect();
     const clickedPixel = getClickedPixel(e);
 
-    console.log(panStatus.current)
     if(currentScale.current === 40 && panStatus.current < 3){
       placePixel(clickedPixel);
     }
@@ -88,36 +75,40 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   let currentScale = useRef(1);
 
+  const zoomChange =(obj) => {
+    currentScale.current = obj.scale;
+  }
 
-  const [dClickSettings,setDClickSettings] = useState({mode:"zoomIn"});
 
   const panStatus = useRef(1);
 
     return(
       <>
-            <div className={"wrapper"}>
-        <TransformWrapper
-            defaultScale={defaultScale}
-            //defaultPositionX={(window.innerWidth-(1000*defaultScale))/2}
-            options={{maxScale:40, minScale:defaultScale, limitToBounds:false, limitToWrapper:false, centerContent:true}}
-            doubleClick={dClickSettings}
-            onZoomChange={(obj) => {currentScale.current = obj.scale;}}
-            onPanning={(obj) => {panStatus.current++}}
-
-            wheel={{step:100}}
-        >
-
-          <TransformComponent>
-              <canvas
-                    ref={canvasRef}
-                    className={"canvas"}
-                    width={canvasSettings.imageSize}
-                    height={canvasSettings.imageSize}
-                    onClick={onCanvasClick}
-              />
-          </TransformComponent>
-        </TransformWrapper>
-          </div>
+        <div className={"wrapper"}>
+          <TransformWrapper
+              defaultScale={defaultScale}
+              options={{maxScale:40, minScale:defaultScale, limitToBounds:false, limitToWrapper:false, centerContent:true}}
+              doubleClick={{mode:"zoomIn", step:100}}
+              onZoomChange={zoomChange}
+              onPanning={(obj) => {panStatus.current++}}
+              wheel={{step:100}}
+          >
+            {({ zoomIn, zoomOut, resetTransform}) => (
+              <>
+                <button onClick={zoomIn} className={"extraButton resetButton"}>R</button>
+                <TransformComponent>
+                  <canvas
+                        ref={canvasRef}
+                        className={"canvas"}
+                        width={canvasSettings.imageSize}
+                        height={canvasSettings.imageSize}
+                        onClick={onCanvasClick}
+                  />
+                </TransformComponent>
+              </>
+                )}
+          </TransformWrapper>
+        </div>
       </>
 
 );
