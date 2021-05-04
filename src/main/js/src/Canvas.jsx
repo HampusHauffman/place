@@ -79,7 +79,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     currentScale.current = obj.scale;
   }
 
-
   const panStatus = useRef(1);
 
     return(
@@ -87,15 +86,16 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
         <div className={"wrapper"}>
           <TransformWrapper
               defaultScale={defaultScale}
-              options={{maxScale:40, minScale:defaultScale, limitToBounds:false, limitToWrapper:false, centerContent:true}}
+              defaultPositionX={(window.innerWidth-(1000*defaultScale))/2}
+              defaultPositionY={0}
+              options={{maxScale:40, minScale:defaultScale, limitToBounds:false, limitToWrapper:false, centerContent:false}}
               doubleClick={{mode:"zoomIn", step:100}}
               onZoomChange={zoomChange}
               onPanning={(obj) => {panStatus.current++}}
               wheel={{step:100}}
           >
-            {({ zoomIn, zoomOut, resetTransform}) => (
+            {({ setTransform, resetTransform,setScale}) => (
               <>
-                <button onClick={zoomIn} className={"extraButton resetButton"}>R</button>
                 <TransformComponent>
                   <canvas
                         ref={canvasRef}
@@ -105,6 +105,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                         onClick={onCanvasClick}
                   />
                 </TransformComponent>
+                <button onClick={()=>{
+                  setTransform((window.innerWidth-(1000*defaultScale))/2, 0, defaultScale, 200, "easeOut")
+                }} className={"extraButton resetButton"}>R</button>
               </>
                 )}
           </TransformWrapper>
