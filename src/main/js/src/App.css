@@ -4,13 +4,18 @@
     height: 100vh;
     width: 100vw;
 
-    overflow: hidden;
+}
+
+.react-transform-component{
+    width: 100vw !important;
+    height: 100vh !important;
 }
 
 .canvas {
     /* Center */
     display: block;
 
+    margin: 0 0 0 0;
 
     /* Crisp edges */
     image-rendering: -moz-crisp-edges;

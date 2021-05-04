@@ -57,30 +57,16 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     let y;
 
     var rect = e.target.getBoundingClientRect();
+    const clickedPixel = getClickedPixel(e);
 
-    x = e.target.clientWidth/2 - ((rect.width/(1000*scale)) * getClickedPixel(e).x)
-    y = e.target.clientHeight/2 - ((rect.height/(1000*scale)) * getClickedPixel(e).y)
-
-
-    if(scale===1) {
-      setScale(8);
-      setCanvasTransformStyle(8)
-    }else if(scale===8){
-      setScale(40);
-      setCanvasTransformStyle(40)
-    }else if(scale===40 && selectedColor === -1){
-      setScale(1);
-      setCanvasTransformStyle(1)
-    }else {
-      const p = getClickedPixel(e);
-      placePixel(p);
+    console.log(panStatus.current)
+    if(currentScale.current === 40 && panStatus.current < 3){
+      placePixel(clickedPixel);
     }
+    panStatus.current = 0;
+
 
   }
-
-
-
-
 
 
   //Get the clicked pixel
@@ -98,20 +84,30 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     }
   }
 
+  const defaultScale = window.innerWidth/1000 < window.innerHeight/1000 ? window.innerWidth/1000*0.8 : window.innerHeight/1000*0.8;
+
+  let currentScale = useRef(1);
+
+
+  const [dClickSettings,setDClickSettings] = useState({mode:"zoomIn"});
+
+  const panStatus = useRef(1);
 
     return(
       <>
             <div className={"wrapper"}>
         <TransformWrapper
-            defaultScale={window.innerWidth/1000 < window.innerHeight/1000 ? window.innerWidth/1000*0.8 : window.innerHeight/1000*0.8}
-            options={{maxScale:40, minScale:0.5, limitToBounds:false, centerContent:false}}
-            zoomIn={{step:200}}
-            doubleClick={{step:200, mode:"zoomIn"}}
+            defaultScale={defaultScale}
+            //defaultPositionX={(window.innerWidth-(1000*defaultScale))/2}
+            options={{maxScale:40, minScale:defaultScale, limitToBounds:false, limitToWrapper:false, centerContent:true}}
+            doubleClick={dClickSettings}
+            onZoomChange={(obj) => {currentScale.current = obj.scale;}}
+            onPanning={(obj) => {panStatus.current++}}
+
             wheel={{step:100}}
         >
 
           <TransformComponent>
-            <div style={{width:"100vw", height:"100vh"}}>
               <canvas
                     ref={canvasRef}
                     className={"canvas"}
@@ -119,7 +115,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                     height={canvasSettings.imageSize}
                     onClick={onCanvasClick}
               />
-            </div>
           </TransformComponent>
         </TransformWrapper>
           </div>
