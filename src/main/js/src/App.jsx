@@ -1,9 +1,8 @@
-import React, {useEffect, useState}  from 'react';
-import { Client} from '@stomp/stompjs';
+import React, {useEffect, useState} from 'react';
+import {Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
-
 
 const App = () => {
 
@@ -116,14 +115,13 @@ const App = () => {
 
           <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
 
-        <div className={"buttonWrapper"}>
             <div className={"buttons"}>
-                <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35}/>
+                <button className={"colorButton extraButton"}
+                        onClick={()=>{setSelectedColor(-1)}}
+                        style={{backgroundColor: swatchColors[selectedColor]}}
+                />
+                <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35} width={212}/>
             </div>
-        </div>
-
-        <button onClick={x => {setSelectedColor(-1)}} className={"extraButton"} style={{backgroundColor: swatchColors[selectedColor]}}>🔎</button>
-
       </>
   );
 };
