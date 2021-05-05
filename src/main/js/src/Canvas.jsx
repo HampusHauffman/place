@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import {TransformComponent, TransformWrapper} from "react-zoom-pan-pinch";
 
@@ -59,7 +59,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const onCanvasClick = (e, obj) => {
     const clickedPixel = getClickedPixel(e);
 
-    if (currentScale.current === 40 && panStatus.current < 3) {
+    if (currentScale === 40 && panStatus.current < 3) {
       placePixel(clickedPixel);
     }
     panStatus.current = 0;
@@ -84,10 +84,10 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const defaultScale = window.innerWidth / 1000 < window.innerHeight / 1000
       ? window.innerWidth / 1000 * 0.8 : window.innerHeight / 1000 * 0.8;
 
-  let currentScale = useRef(1);
+  const [currentScale,setCurrentScale] = useState(1);
 
   const zoomChange = (obj) => {
-    currentScale.current = obj.scale;
+    setCurrentScale(obj.scale);
   }
 
   const panStatus = useRef(1);
@@ -101,7 +101,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
               defaultPositionY={0}
               options={{
                 maxScale: 40,
-                minScale: defaultScale*0.9,
+                minScale: defaultScale * 0.9,
                 limitToBounds: false,
                 limitToWrapper: false,
                 centerContent: false
@@ -134,15 +134,21 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                         200,
                         "easeOut")
                   }}
-                    className={"extraButton resetButton"}
-                    style={{backgroundColor: swatchColors[selectedColor]}}
+                          className={"extraButton resetButton"}
+                          style={{backgroundColor: swatchColors[selectedColor]}}
                   >
-                    <img src={"/reset.png"} alt={"reset"} style={{width:30, marginLeft:-5.6, marginTop:0, transform:"scaleX(-1)"}}/>
+                    <img src={"/reset.png"} alt={"reset"} style={{
+                      width: 30,
+                      marginLeft: -5.6,
+                      marginTop: 0,
+                      transform: "scaleX(-1)"
+                    }}/>
                   </button>
                 </>
             )}
           </TransformWrapper>
         </div>
+        <p className={"scale"}>{(currentScale*2.5).toFixed(2)} %</p>
       </>
 
   );

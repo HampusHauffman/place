@@ -10,7 +10,7 @@ const App = () => {
   //Canvas
   const [canvasSettings, setCanvasSettings] = useState({
     "imageSize": size,
-    "pixels":new Array(Math.pow(size,2)).fill([0,0,0,255]),
+    "pixels": new Array(Math.pow(size, 2)).fill([0, 0, 0, 255]),
   })
 
   const [pixel, setPixel] = useState(null);
@@ -30,20 +30,20 @@ const App = () => {
 
   const handleBinaryMessage = (message) => {
     let newCanvas = {...canvasSettings};
-    const b = new Uint8Array(Math.pow(size,2));
+    const b = new Uint8Array(Math.pow(size, 2));
     let i = 0;
 
-    for(i; i < Math.pow(size,2)/2; i++){ //Bytes represent 2 colors 1111 1000
-      let one = i*2;
-      let two = i*2+1;
+    for (i; i < Math.pow(size, 2) / 2; i++) { //Bytes represent 2 colors 1111 1000
+      let one = i * 2;
+      let two = i * 2 + 1;
       b[one] = message.binaryBody[i] >>> 4; //parses 8bit (byte) data to 4bit data (color)
       b[two] = message.binaryBody[i] & 15;
 
       let rgb1 = hexToRgb(swatchColors[b[one]]);
-      let rgb2 = hexToRgb(swatchColors[b[i*2+1]]);
+      let rgb2 = hexToRgb(swatchColors[b[i * 2 + 1]]);
 
-      newCanvas.pixels[one] = [rgb1.r,rgb1.g,rgb1.b,255];
-      newCanvas.pixels[two] = [rgb2.r,rgb2.g,rgb2.b,255];
+      newCanvas.pixels[one] = [rgb1.r, rgb1.g, rgb1.b, 255];
+      newCanvas.pixels[two] = [rgb2.r, rgb2.g, rgb2.b, 255];
     }
     setCanvasSettings(newCanvas);
 
@@ -57,7 +57,7 @@ const App = () => {
       const m = JSON.parse(message.body);
       setPixel({...m, "color": hexToRgb(swatchColors[m.color])}); //convert to hex to rgb
     }
-    client.ack(message.headers['message-id'],message.headers.subscription); //dont know if i neeed to do this
+    client.ack(message.headers['message-id'], message.headers.subscription); //dont know if i neeed to do this
 
   };
 
@@ -66,19 +66,19 @@ const App = () => {
     console.log("Connected: " + frame);
   }
 
-  client.onStompError =  (frame) => {
+  client.onStompError = (frame) => {
     console.log('Broker reported error: ' + frame.headers['message']);
     console.log('Additional details: ' + frame.body);
   };
 
-
   useEffect(() => {
     client.activate();
-  },[]);
+  }, []);
 
-  const [selectedColor, setSelectedColor] = useState(Math.round(Math.random()*15))
+  const [selectedColor, setSelectedColor] = useState(
+      Math.round(Math.random() * 15))
 
-  const swatchOnClick = (obj) =>{
+  const swatchOnClick = (obj) => {
     setSelectedColor(swatchColors.indexOf(obj.hex.toUpperCase()));
   }
 
@@ -113,17 +113,23 @@ const App = () => {
 
   return (
       <>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0' />
+        <meta name='viewport'
+              content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0'/>
 
-          <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
+        <Canvas client={client} canvasSettings={canvasSettings}
+                selectedColor={selectedColor} pixel={pixel}/>
 
-            <div className={"buttons"} style={swatchUp ? {bottom:0}: {bottom:-200}}>
-                <button className={"colorButton extraButton"}
-                        onClick={()=>{setSwatchUp(prevState => !prevState)}}
-                        style={{backgroundColor: swatchColors[selectedColor]}}
-                />
-                <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35} width={212}/>
-            </div>
+        <div className={"buttons"}
+             style={swatchUp ? {bottom: 0} : {bottom: -200}}>
+          <button className={"colorButton extraButton"}
+                  onClick={() => {
+                    setSwatchUp(prevState => !prevState)
+                  }}
+                  style={{backgroundColor: swatchColors[selectedColor]}}
+          />
+          <CirclePicker onChange={swatchOnClick} colors={swatchColors}
+                        circleSize={35} width={212}/>
+        </div>
       </>
   );
 };
