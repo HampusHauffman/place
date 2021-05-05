@@ -140,7 +140,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                     className={"extraButton resetButton"}
                     style={{backgroundColor: swatchColors[selectedColor]}}
                   >
-                    R
+                    <img src={"/reset.png"} alt={"reset"} style={{width:40, marginLeft:-5, marginTop:1, transform:"scaleX(-1)"}}/>
                   </button>
                 </>
             )}
