@@ -76,7 +76,7 @@ const App = () => {
     client.activate();
   },[]);
 
-  const [selectedColor, setSelectedColor] = useState(-1)
+  const [selectedColor, setSelectedColor] = useState(Math.round(Math.random()*15))
 
   const swatchOnClick = (obj) =>{
     setSelectedColor(swatchColors.indexOf(obj.hex.toUpperCase()));
@@ -109,15 +109,17 @@ const App = () => {
     } : null;
   }
 
+  const [swatchUp, setSwatchUp] = useState(false);
+
   return (
       <>
         <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0' />
 
           <Canvas client={client} canvasSettings={canvasSettings} selectedColor={selectedColor} pixel={pixel}/>
 
-            <div className={"buttons"}>
+            <div className={"buttons"} style={swatchUp ? {bottom:0}: {bottom:-200}}>
                 <button className={"colorButton extraButton"}
-                        onClick={()=>{setSelectedColor(-1)}}
+                        onClick={()=>{setSwatchUp(prevState => !prevState)}}
                         style={{backgroundColor: swatchColors[selectedColor]}}
                 />
                 <CirclePicker onChange={swatchOnClick} colors={swatchColors} circleSize={35} width={212}/>

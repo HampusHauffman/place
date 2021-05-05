@@ -26,8 +26,8 @@
 }
 
 .extraButton{
-    width: 45px;
-    height: 45px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
 
     background-color: white;
@@ -52,7 +52,7 @@
 }
 
 .colorButton{
-    top:-10px;
+    top:-20px;
     left: 50%;
     transform: translate(-65%, 0);
 }
@@ -67,13 +67,12 @@
     left: 50%;
     transform: translate(-50%, 0);
     transition: bottom 0.5s;
-    padding-top: 60px;
+    padding-top: 30px;
 
 }
 
 .buttons:hover{
     transition: bottom 0.5s;
-    bottom: 0px;
 }
 
 .circle-picker{

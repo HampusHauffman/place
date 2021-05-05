@@ -50,9 +50,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   }, [pixel])
 
   const placePixel = (p) => {
-    if (selectedColor === -1) {
-      return;
-    }
     client.publish({
       destination: "/pixel",
       body: JSON.stringify({"x": p.x, "y": p.y, "color": selectedColor})
@@ -140,7 +137,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                     className={"extraButton resetButton"}
                     style={{backgroundColor: swatchColors[selectedColor]}}
                   >
-                    <img src={"/reset.png"} alt={"reset"} style={{width:40, marginLeft:-5, marginTop:1, transform:"scaleX(-1)"}}/>
+                    <img src={"/reset.png"} alt={"reset"} style={{width:30, marginLeft:-5.6, marginTop:0, transform:"scaleX(-1)"}}/>
                   </button>
                 </>
             )}
