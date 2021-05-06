@@ -143,7 +143,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                       transform: "scaleX(-1)"
                     }}/>
                   </button>
-                  <p className={"scale"}>{(scale * 2.5).toFixed(2)} %</p>
+                  <p className={"scale"}>{(scale * 2.5).toFixed(2)}x</p>
                 </>
             )}
           </TransformWrapper>

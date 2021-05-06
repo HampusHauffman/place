@@ -3,6 +3,7 @@ import {Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
+import Modal from 'react-modal';
 
 const App = () => {
 
@@ -20,7 +21,7 @@ const App = () => {
     //brokerURL: 'ws://localhost:8080/ws',
 
     debug: function (str) {
-      //console.log(str);
+      console.log(str);
     },
 
     reconnectDelay: 10,
@@ -110,6 +111,18 @@ const App = () => {
   }
 
   const [swatchUp, setSwatchUp] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
+
+  const customModalStyles = {
+    content : {
+      top                   : '30%',
+      left                  : '50%',
+      right                 : 'auto',
+      bottom                : 'auto',
+      marginRight           : '-30%',
+      transform             : 'translate(-50%, -30%)'
+    }
+  };
 
   return (
       <>
@@ -130,6 +143,21 @@ const App = () => {
           <CirclePicker onChange={swatchOnClick} colors={swatchColors}
                         circleSize={35} width={212}/>
         </div>
+
+        <Modal
+            isOpen={modalOpen}
+            onRequestClose={() => {setModalOpen(false)}}
+            style={customModalStyles}
+            contentLabel="Example Modal"
+        >
+
+          <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
+                  style={{backgroundColor: swatchColors[selectedColor]}}>x</button>
+          <br/>
+          <h2>Hello welcome to this PXL.PLACE</h2>
+          <p>Zoom in to 100% and try and place some pixels</p>
+          <p>The board you are vewing is updated live with pixels from everyone using this sire</p>
+        </Modal>
       </>
   );
 };
