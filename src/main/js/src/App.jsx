@@ -3,7 +3,6 @@ import {Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
-import Modal from 'react-modal';
 
 const App = () => {
 
@@ -21,7 +20,7 @@ const App = () => {
     //brokerURL: 'ws://localhost:8080/ws',
 
     debug: function (str) {
-      console.log(str);
+      //console.log(str);
     },
 
     reconnectDelay: 10,
@@ -111,21 +110,7 @@ const App = () => {
   }
 
   const [swatchUp, setSwatchUp] = useState(false);
-  const [modalOpen, setModalOpen] = useState(true);
 
-  const customModalStyles = {
-    overlay: {
-      backgroundColor: swatchColors[selectedColor]+'30',
-    },
-    content : {
-      top                   : '30%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-35%',
-      transform             : 'translate(-50%, -30%)',
-    }
-  };
 
   return (
       <>
@@ -147,22 +132,6 @@ const App = () => {
                         circleSize={35} width={212}/>
         </div>
 
-        <Modal
-            isOpen={modalOpen}
-            onRequestClose={() => {setModalOpen(false)}}
-            style={customModalStyles}
-            contentLabel="Example Modal"
-
-
-        >
-
-          <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
-                  style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}>x</button>
-          <br/>
-          <h2>This is PXL.PLACE</h2>
-          <h3>Zoom in to 100% and try and place some pixels!</h3>
-          <p>PXL.PLACE is a live canvas for people to create art together across the world!</p>
-        </Modal>
       </>
   );
 };

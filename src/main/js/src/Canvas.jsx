@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import {TransformComponent, TransformWrapper} from "react-zoom-pan-pinch";
+import Modal from "react-modal";
 
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
@@ -58,8 +59,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   const onCanvasClick = (e, obj) => {
     const clickedPixel = getClickedPixel(e);
+    console.log("hej")
 
-    if (currentScale.current === 40 && panStatus.current < 3) {
+    if (panStatus.current < 3) {
       placePixel(clickedPixel);
     }
     panStatus.current = 0;
@@ -90,6 +92,26 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   useEffect(() => {console.log(r)},[r]);
 
   const panStatus = useRef(1);
+
+  const [modalOpen, setModalOpen] = useState(true);
+
+  const customModalStyles = {
+    overlay: {
+      backgroundColor: swatchColors[selectedColor]+'30',
+    },
+    content : {
+      top                   : '30%',
+      left                  : '50%',
+      right                 : 'auto',
+      bottom                : 'auto',
+      marginRight           : '-35%',
+      transform             : 'translate(-50%, -30%)',
+    }
+  };
+
+  Modal.setAppElement('#root')
+
+
 
   return (
       <>
@@ -143,6 +165,28 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                     }}/>
                   </button>
                   <p className={"scale"}>{(scale * 2.5).toFixed(2)}x</p>
+
+                  <Modal
+                      isOpen={modalOpen}
+                      onAfterClose={()=>{
+                        setTransform(
+                            Math.random()*(-40000+window.innerWidth),
+                            Math.random()*(-40000+window.innerHeight),
+                            40,
+                            2000,
+                            "easeOut")
+                      }}
+                      style={customModalStyles}
+                      contentLabel="Example Modal"
+                  >
+
+                    <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
+                            style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}>x</button>
+                    <br/>
+                    <h2>This is PXL.PLACE</h2>
+                    <h3>Try zooming and moving around and place some PIXELS</h3>
+                    <p>PXL.PLACE is a live canvas for people to create art together across the world!</p>
+                  </Modal>
                 </>
             )}
           </TransformWrapper>
