@@ -59,7 +59,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const onCanvasClick = (e, obj) => {
     const clickedPixel = getClickedPixel(e);
 
-    if (currentScale === 40 && panStatus.current < 3) {
+    if (currentScale.current === 40 && panStatus.current < 3) {
       placePixel(clickedPixel);
     }
     panStatus.current = 0;
@@ -84,11 +84,10 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const defaultScale = window.innerWidth / 1000 < window.innerHeight / 1000
       ? window.innerWidth / 1000 * 0.8 : window.innerHeight / 1000 * 0.8;
 
-  const [currentScale,setCurrentScale] = useState(1);
+  const currentScale = useRef(1);
 
-  const zoomChange = (obj) => {
-    setCurrentScale(obj.scale);
-  }
+  const r = useRef(null);
+  useEffect(() => {console.log(r)},[r]);
 
   const panStatus = useRef(1);
 
@@ -106,16 +105,16 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                 limitToWrapper: false,
                 centerContent: false
               }}
+              onZoomChange={(obj)=>{currentScale.current = obj.scale}}
               doubleClick={{mode: "zoomIn", step: 100}}
-              onZoomChange={zoomChange}
               onPanning={(obj) => {
                 panStatus.current++
               }}
               wheel={{step: 100}}
           >
-            {({setTransform, resetTransform, setScale}) => (
+            {({setTransform, resetTransform, setScale, scale}) => (
                 <>
-                  <TransformComponent>
+                  <TransformComponent ref={r}>
                     <canvas
                         ref={canvasRef}
                         className={"canvas"}
@@ -144,11 +143,11 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                       transform: "scaleX(-1)"
                     }}/>
                   </button>
+                  <p className={"scale"}>{(scale * 2.5).toFixed(2)} %</p>
                 </>
             )}
           </TransformWrapper>
         </div>
-        <p className={"scale"}>{(currentScale*2.5).toFixed(2)} %</p>
       </>
 
   );
