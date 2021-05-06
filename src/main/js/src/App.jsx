@@ -114,13 +114,16 @@ const App = () => {
   const [modalOpen, setModalOpen] = useState(true);
 
   const customModalStyles = {
+    overlay: {
+      backgroundColor: swatchColors[selectedColor]+'30',
+    },
     content : {
       top                   : '30%',
       left                  : '50%',
       right                 : 'auto',
       bottom                : 'auto',
-      marginRight           : '-30%',
-      transform             : 'translate(-50%, -30%)'
+      marginRight           : '-35%',
+      transform             : 'translate(-50%, -30%)',
     }
   };
 
@@ -149,14 +152,16 @@ const App = () => {
             onRequestClose={() => {setModalOpen(false)}}
             style={customModalStyles}
             contentLabel="Example Modal"
+
+
         >
 
           <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
-                  style={{backgroundColor: swatchColors[selectedColor]}}>x</button>
+                  style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}>x</button>
           <br/>
-          <h2>Hello welcome to this PXL.PLACE</h2>
-          <p>Zoom in to 100% and try and place some pixels</p>
-          <p>The board you are vewing is updated live with pixels from everyone using this sire</p>
+          <h2>This is PXL.PLACE</h2>
+          <h3>Zoom in to 100% and try and place some pixels!</h3>
+          <p>PXL.PLACE is a live canvas for people to create art together across the world!</p>
         </Modal>
       </>
   );

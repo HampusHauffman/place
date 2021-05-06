@@ -40,7 +40,7 @@
 
     transition: all .1s ease-in-out;
 
-    z-index: 1;
+    z-index: 0.5;
 }
 
 .resetButton{
@@ -97,6 +97,10 @@
 
     padding: 3px 5px 0px 5px;
 
+}
+
+.overlay{
+    background-color: blue;
 }
 
 body{

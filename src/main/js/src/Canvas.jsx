@@ -124,7 +124,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                     />
                   </TransformComponent>
 
-
                   <button onClick={() => {
                     setTransform(
                         (window.innerWidth - (1000 * defaultScale)) / 2,
