@@ -159,12 +159,12 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                   >
                     <img src={"/reset.png"} alt={"reset"} style={{
                       width: 30,
-                      marginLeft: -5.6,
+                      marginLeft: 0,
                       marginTop: 0,
                       transform: "scaleX(-1)"
                     }}/>
                   </button>
-                  <p className={"scale"}>{(scale * 2.5).toFixed(2)}x</p>
+                  <p className={"scale"}>{(scale).toFixed(2)}x</p>
 
                   <Modal
                       isOpen={modalOpen}
@@ -181,9 +181,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                   >
 
                     <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
-                            style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}>x</button>
+                            style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}></button>
                     <br/>
-                    <h2>This is PXL.PLACE</h2>
+                    <h2 style={{marginTop:-10}}>This is PXL.PLACE</h2>
                     <h3>Try zooming and moving around and place some PIXELS</h3>
                     <p>PXL.PLACE is a live canvas for people to create art together across the world!</p>
                   </Modal>
