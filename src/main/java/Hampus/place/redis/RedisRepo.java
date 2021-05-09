@@ -64,6 +64,18 @@ public class RedisRepo {
     );
   }
 
+  public void setAllOnce(){
+    byte[] board = new byte[500000];
+    for(int i = 0; i < board.length; i++) {
+      byte bothNumbers = (byte) ((((byte)(Math.random() * 15)) << 4) | ((byte)(Math.random() * 15)));
+      board[i] = bothNumbers;
+    }
+
+    redisTemplate.execute((RedisCallback) connection ->
+        connection.set(KEY.getBytes(), board)
+    );
+  }
+
 
 
 }

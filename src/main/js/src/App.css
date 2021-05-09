@@ -1,117 +1,121 @@
 
-.wrapper{
-    background-color: black;
-    height: 100vh;
-    width: 100vw;
+.wrapper {
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
 
 }
 
-.react-transform-component{
-    width: 100vw !important;
-    height: 100vh !important;
+.react-transform-component {
+  width: 100vw !important;
+  height: 100vh !important;
 }
 
 .canvas {
-    /* Center */
-    display: block;
+  /* Center */
+  display: block;
 
-    margin: 0 0 0 0;
+  margin: 0 0 0 0;
+  /* Crisp edges */
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  -webkit-perspective: 1000px;
 
-    /* Crisp edges */
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -webkit-crisp-edges;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
+
 
 }
 
-.extraButton{
-    height: 35px;
-    width: 35px;
-    max-height: 35px;
-    display: inline-block;
-    border-radius: 50px;
+.extraButton {
+  height: 35px;
+  width: 35px;
+  max-height: 35px;
+  display: inline-block;
+  border-radius: 50px;
 
-    background-color: white;
+  background-color: white;
 
-    position: fixed;
+  position: fixed;
 
-    border: 2px solid black;
+  border: 2px solid black;
 
-    font-size: 20px;
+  font-size: 20px;
 
-    transition: all .1s ease-in-out;
+  transition: all .1s ease-in-out;
 
-    z-index: 0.5;
+  z-index: 0.5;
 
-    box-sizing:border-box;
+  box-sizing: border-box;
 
-    padding: 0px;
+  padding: 0px;
 }
 
-.resetButton{
-    top: 20px;
-    left: 20px;
+.resetButton {
+  top: 20px;
+  left: 20px;
 }
+
 .resetButton:hover {
-    transform: scale(1.2);
+  transform: scale(1.2);
 }
 
-.colorButton{
-    top:-20px;
-    left: 50%;
-    transform: translate(-65%, 0);
+.colorButton {
+  top: -20px;
+  left: 50%;
+  transform: translate(-65%, 0);
 }
+
 .colorButton:hover {
-    transform-origin: center;
-    transform: scale(1.2) translate(-53%, 0);
+  transform-origin: center;
+  transform: scale(1.2) translate(-53%, 0);
 }
 
-.buttons{
-    position: fixed;
-    bottom: -200px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    transition: bottom 0.5s;
-    padding-top: 30px;
-
-}
-
-.buttons:hover{
-    transition: bottom 0.5s;
-}
-
-.circle-picker{
-    margin: 0 0 0 0 !important;
-}
-
-.buttons  > div > span > div{
-    border-radius: 50%;
-    border: 2px solid black;
-}
-
-.scale{
-    position: fixed;
-    bottom: 0;
-    right: 0px;
-    font-size: 20px;
-    font-family: Verdana;
-    margin: 0 0 0 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border-top-left-radius: 10px;
-
-    padding: 3px 5px 0px 5px;
+.buttons {
+  position: fixed;
+  bottom: -200px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  transition: bottom 0.5s;
+  padding-top: 30px;
 
 }
 
-.overlay{
-    background-color: blue;
+.buttons:hover {
+  transition: bottom 0.5s;
 }
 
-body{
-    background-color: black;
-    margin: 0px;
-    font-family: Verdana;
+.circle-picker {
+  margin: 0 0 0 0 !important;
+}
+
+.buttons > div > span > div {
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+.scale {
+  position: fixed;
+  bottom: 0;
+  right: 0px;
+  font-size: 20px;
+  font-family: Verdana;
+  margin: 0 0 0 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-top-left-radius: 10px;
+
+  padding: 3px 5px 0px 5px;
 
 }
+
+.overlay {
+  background-color: blue;
+}
+
+body {
+  background-color: black;
+  margin: 0px;
+  font-family: Verdana;
+}
+

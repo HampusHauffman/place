@@ -5,6 +5,8 @@ import Modal from "react-modal";
 
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
+  const maxScale = 40;
+
   const swatchColors = [
     '#FFFFFF',
     '#E4E4E4',
@@ -26,7 +28,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
+
   useEffect(() => {
+
     //Create imageData
     const imageData = new ImageData(
         new Uint8ClampedArray(canvasSettings.pixels.flat()),
@@ -35,7 +39,14 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     //Get context for canvas
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
+
+    var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+    canvasObj.width = Math.floor(1000 * scale);
+    canvasObj.height = Math.floor(1000 * scale);
+
+// Normalize coordinate system to use css pixels.
+    ctx.scale(scale, scale);
+
     ctx.putImageData(imageData, 0, 0);
   }, [canvasSettings])
 
@@ -46,6 +57,14 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
               [pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1, 1);
       const canvasObj = canvasRef.current;
       const ctx = canvasObj.getContext("2d");
+
+      var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+      canvasObj.width = Math.floor(1000 * scale);
+      canvasObj.height = Math.floor(1000 * scale);
+
+// Normalize coordinate system to use css pixels.
+      ctx.scale(scale, scale);
+
       ctx.putImageData(imageData, pixel.x, pixel.y);
     }
   }, [pixel])
@@ -59,9 +78,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   const onCanvasClick = (e, obj) => {
     const clickedPixel = getClickedPixel(e);
-    console.log("hej")
 
-    if (panStatus.current < 3) {
+
+    if (panStatus.current < 3 && currentScale.current > 3) {
       placePixel(clickedPixel);
     }
     panStatus.current = 0;
@@ -88,8 +107,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   const currentScale = useRef(1);
 
-  const r = useRef(null);
-  useEffect(() => {console.log(r)},[r]);
 
   const panStatus = useRef(1);
 
@@ -97,21 +114,19 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
   const customModalStyles = {
     overlay: {
-      backgroundColor: swatchColors[selectedColor]+'30',
+      backgroundColor: swatchColors[selectedColor] + '30',
     },
-    content : {
-      top                   : '30%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-35%',
-      transform             : 'translate(-50%, -30%)',
+    content: {
+      top: '30%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-35%',
+      transform: 'translate(-50%, -30%)',
     }
   };
 
   Modal.setAppElement('#root')
-
-
 
   return (
       <>
@@ -121,13 +136,15 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
               defaultPositionX={(window.innerWidth - (1000 * defaultScale)) / 2}
               defaultPositionY={0}
               options={{
-                maxScale: 40,
+                maxScale: maxScale,
                 minScale: defaultScale * 0.9,
                 limitToBounds: false,
                 limitToWrapper: false,
                 centerContent: false
               }}
-              onZoomChange={(obj)=>{currentScale.current = obj.scale}}
+              onZoomChange={(obj) => {
+                currentScale.current = obj.scale
+              }}
               doubleClick={{mode: "zoomIn", step: 100}}
               onPanning={(obj) => {
                 panStatus.current++
@@ -136,7 +153,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
           >
             {({setTransform, resetTransform, setScale, scale}) => (
                 <>
-                  <TransformComponent ref={r}>
+                  <TransformComponent>
                     <canvas
                         ref={canvasRef}
                         className={"canvas"}
@@ -168,11 +185,11 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
                   <Modal
                       isOpen={modalOpen}
-                      onAfterClose={()=>{
+                      onAfterClose={() => {
                         setTransform(
-                            Math.random()*(-40000+window.innerWidth),
-                            Math.random()*(-40000+window.innerHeight),
-                            40,
+                            Math.random() * (-40000 + window.innerWidth),
+                            Math.random() * (-40000 + window.innerHeight),
+                            maxScale,
                             2000,
                             "easeOut")
                       }}
@@ -180,12 +197,19 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                       contentLabel="Example Modal"
                   >
 
-                    <button className={"extraButton"} onClick={() => {setModalOpen(false)}}
-                            style={{backgroundColor: swatchColors[selectedColor], right:10, top:10}}></button>
+                    <button className={"extraButton"} onClick={() => {
+                      setModalOpen(false)
+                    }}
+                            style={{
+                              backgroundColor: swatchColors[selectedColor],
+                              right: 10,
+                              top: 10
+                            }}></button>
                     <br/>
-                    <h2 style={{marginTop:-10}}>This is PXL.PLACE</h2>
+                    <h2 style={{marginTop: -10}}>This is PXL.PLACE</h2>
                     <h3>Try zooming and moving around and place some PIXELS</h3>
-                    <p>PXL.PLACE is a live canvas for people to create art together across the world!</p>
+                    <p>PXL.PLACE is a live canvas for people to create art
+                      together across the world!</p>
                   </Modal>
                 </>
             )}

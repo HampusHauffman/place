@@ -16,6 +16,7 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,10 +39,16 @@ public class Webhook {
   @Value("${spring.redis.host}")
   String redisHost;
 
-  @GetMapping("/")
-  public @ResponseBody String test(){
+  @GetMapping("/{x}/{y}")
+  public @ResponseBody String test(@PathVariable(value="x") int x, @PathVariable(value="y") int y){
     log.info("GetMapping on /");
-    return redisHost + " " +redisRepo.getPixel(0,0);
+    return redisRepo.getPixel(x,y).toString();
+  }
+
+  private @ResponseBody String fill(){
+    log.info("Filling");
+    redisRepo.setAllOnce();
+    return "Filled the board";
   }
 
 
