@@ -37,17 +37,20 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
         canvasSettings.imageSize, canvasSettings.imageSize);
     //Display imageData
     //Get context for canvas
-    const canvasObj = canvasRef.current;
-    const ctx = canvasObj.getContext("2d");
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-    var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-    canvasObj.width = Math.floor(1000 * scale);
-    canvasObj.height = Math.floor(1000 * scale);
+    var scale = window.devicePixelRatio;
+    console.log(scale)
 
-// Normalize coordinate system to use css pixels.
+    canvas.innerWidth = Math.floor(1000 * scale);
+    canvas.innerHeight = Math.floor(1000 * scale);
+
+
     ctx.scale(scale, scale);
 
     ctx.putImageData(imageData, 0, 0);
+
   }, [canvasSettings])
 
   useEffect(() => {
@@ -55,14 +58,16 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       const imageData = new ImageData(
           new Uint8ClampedArray(
               [pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1, 1);
-      const canvasObj = canvasRef.current;
-      const ctx = canvasObj.getContext("2d");
 
-      var scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-      canvasObj.width = Math.floor(1000 * scale);
-      canvasObj.height = Math.floor(1000 * scale);
+      //Get context for canvas
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
 
-// Normalize coordinate system to use css pixels.
+      var scale = window.devicePixelRatio;
+      console.log(scale)
+      canvas.innerWidth = Math.floor(1000 * scale);
+      canvas.innerHeight = Math.floor(1000 * scale);
+
       ctx.scale(scale, scale);
 
       ctx.putImageData(imageData, pixel.x, pixel.y);

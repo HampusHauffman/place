@@ -18,10 +18,9 @@
   margin: 0 0 0 0;
   /* Crisp edges */
   image-rendering: crisp-edges;
-  image-rendering: pixelated;
   image-rendering: -webkit-crisp-edges;
   image-rendering: -moz-crisp-edges;
-  -webkit-perspective: 1000px;
+  image-rendering: pixelated;
 
 
 
