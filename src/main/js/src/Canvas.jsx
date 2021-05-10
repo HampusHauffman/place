@@ -81,7 +81,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     const clickedPixel = getClickedPixel(e);
 
 
-    if (panStatus.current < 3 && currentScale.current > 3*1000/dpiScale) {
+    if (panStatus.current < 3 && currentScale.current > 3*canvasSettings.imageSize/dpiScale) {
       console.log(3*1000/dpiScale)
       placePixel(clickedPixel);
     }
@@ -161,7 +161,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                         width={canvasSettings.imageSize}
                         height={canvasSettings.imageSize}
                         onClick={onCanvasClick}
-                        style={{height:dpiScale, width:dpiScale}}
+                        style={{height:dpiScale, width:dpiScale} }
                     />
                   </TransformComponent>
 
