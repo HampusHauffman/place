@@ -5,7 +5,10 @@ import Modal from "react-modal";
 
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
-  const maxScale = 40;
+
+  const dpi = window.devicePixelRatio;
+  const dpiScale = dpi !== 1 ? 5000 : 1000;
+  const maxScale = 40 * 1000 / dpiScale;
 
   const swatchColors = [
     '#FFFFFF',
@@ -29,6 +32,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const canvasRef = useRef(null);
 
 
+
   useEffect(() => {
 
     //Create imageData
@@ -38,16 +42,11 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     //Display imageData
     //Get context for canvas
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d",{ alpha: false });
+    ctx.shadowBlur = 0;
+    ctx.mozImageSmoothingEnabled = false;  // firefox
+    ctx.imageSmoothingEnabled = false;
 
-    var scale = window.devicePixelRatio;
-    console.log(scale)
-
-    canvas.innerWidth = Math.floor(1000 * scale);
-    canvas.innerHeight = Math.floor(1000 * scale);
-
-
-    ctx.scale(scale, scale);
 
     ctx.putImageData(imageData, 0, 0);
 
@@ -57,18 +56,15 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     if (pixel) {
       const imageData = new ImageData(
           new Uint8ClampedArray(
-              [pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1, 1);
+              [pixel.color.r, pixel.color.g, pixel.color.b, 255]), 1,1);
 
       //Get context for canvas
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d",{ alpha: false });
+      ctx.shadowBlur = 0;
+      ctx.mozImageSmoothingEnabled = false;  // firefox
+      ctx.imageSmoothingEnabled = false;
 
-      var scale = window.devicePixelRatio;
-      console.log(scale)
-      canvas.innerWidth = Math.floor(1000 * scale);
-      canvas.innerHeight = Math.floor(1000 * scale);
-
-      ctx.scale(scale, scale);
 
       ctx.putImageData(imageData, pixel.x, pixel.y);
     }
@@ -85,7 +81,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     const clickedPixel = getClickedPixel(e);
 
 
-    if (panStatus.current < 3 && currentScale.current > 3) {
+    if (panStatus.current < 3 && currentScale.current > 3*1000/dpiScale) {
+      console.log(3*1000/dpiScale)
       placePixel(clickedPixel);
     }
     panStatus.current = 0;
@@ -107,11 +104,10 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     }
   }
 
-  const defaultScale = window.innerWidth / 1000 < window.innerHeight / 1000
-      ? window.innerWidth / 1000 * 0.8 : window.innerHeight / 1000 * 0.8;
+  const defaultScale = window.innerWidth / dpiScale < window.innerHeight / dpiScale
+      ? window.innerWidth / dpiScale * 0.8 : window.innerHeight / dpiScale * 0.8;
 
   const currentScale = useRef(1);
-
 
   const panStatus = useRef(1);
 
@@ -138,7 +134,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
         <div className={"wrapper"}>
           <TransformWrapper
               defaultScale={defaultScale}
-              defaultPositionX={(window.innerWidth - (1000 * defaultScale)) / 2}
+              defaultPositionX={(window.innerWidth - (dpiScale * defaultScale)) / 2}
               defaultPositionY={0}
               options={{
                 maxScale: maxScale,
@@ -165,12 +161,13 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                         width={canvasSettings.imageSize}
                         height={canvasSettings.imageSize}
                         onClick={onCanvasClick}
+                        style={{height:dpiScale, width:dpiScale}}
                     />
                   </TransformComponent>
 
                   <button onClick={() => {
                     setTransform(
-                        (window.innerWidth - (1000 * defaultScale)) / 2,
+                        (window.innerWidth - (dpiScale * defaultScale)) / 2,
                         0,
                         defaultScale,
                         200,
@@ -195,7 +192,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                             Math.random() * (-40000 + window.innerWidth),
                             Math.random() * (-40000 + window.innerHeight),
                             maxScale,
-                            2000,
+                            4000,
                             "easeOut")
                       }}
                       style={customModalStyles}
