@@ -3,6 +3,15 @@ import {Client} from '@stomp/stompjs';
 import './App.css';
 import Canvas from "./Canvas";
 import {CirclePicker} from "react-color";
+import Modal from "react-modal";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  LinkedinIcon,
+  LinkedinShareButton,
+  TwitterIcon,
+  TwitterShareButton
+} from "react-share";
 
 const App = () => {
 
@@ -20,7 +29,7 @@ const App = () => {
     //brokerURL: 'ws://localhost:8080/ws',
 
     debug: function (str) {
-      //console.log(str);
+      console.log(str);
     },
 
     reconnectDelay: 10,
@@ -62,6 +71,7 @@ const App = () => {
   };
 
   client.onConnect = (frame) => {
+
     client.subscribe("/topic/place", callback);
     console.log("Connected: " + frame);
   }
@@ -82,7 +92,7 @@ const App = () => {
     setSelectedColor(swatchColors.indexOf(obj.hex.toUpperCase()));
   }
 
-  const swatchColors = [
+  const swatchColors = [ //TODO change this if you reset the board
     '#FFFFFF',
     '#E4E4E4',
     '#888888',
@@ -111,14 +121,34 @@ const App = () => {
 
   const [swatchUp, setSwatchUp] = useState(false);
 
+  const customModalStyles = {
+    overlay: {
+      backgroundColor: swatchColors[selectedColor] + '30',
+    },
+    content: {
+      top: '30%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-35%',
+      transform: 'translate(-50%, -30%)',
+      background: "#121212",
+      color: "#FAFAFA",
+      border: '3px solid ' + swatchColors[selectedColor],
+      borderRadius: '25px',
+    }
+  };
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
       <>
+
         <meta name='viewport'
               content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0'/>
 
         <Canvas client={client} canvasSettings={canvasSettings}
                 selectedColor={selectedColor} pixel={pixel}/>
+
 
         <div className={"buttons"}
              style={swatchUp ? {bottom: 0} : {bottom: -200}}>
@@ -131,6 +161,70 @@ const App = () => {
           <CirclePicker onChange={swatchOnClick} colors={swatchColors}
                         circleSize={35} width={212}/>
         </div>
+
+
+        <button onClick={() => {
+          setModalOpen(true)
+        }}
+                className={"extraButton resetButton"}
+                style={{
+                  backgroundColor: swatchColors[selectedColor],
+                  marginTop: 50
+                }}
+        >
+          <b>i</b>
+        </button>
+
+        <Modal
+            isOpen={modalOpen}
+            onRequestClose={() => {
+              setModalOpen(false)
+            }}
+            style={customModalStyles}
+            contentLabel="Example Modal"
+        >
+
+          <button className={"extraButton"} onClick={() => {
+            setModalOpen(false)
+          }}
+                  style={{
+                    backgroundColor: swatchColors[selectedColor],
+                    right: 10,
+                    top: 10
+                  }}>
+            <span style={{marginTop: -2}}>x</span>
+          </button>
+          <br/>
+          <h2 style={{marginTop: -10}}>Info! </h2>
+          <h3>
+            Thank you for using this website!
+          </h3>
+          <p>
+            It would mean the world if you shared it!
+            <br/>
+            Imagine the crazy pictures that you could draw with the help of your
+            friends!
+          </p>
+
+          <FacebookShareButton url={"https://pxl.place"}
+                               quote={"Come draw with me over at pxl.place. A shared canvas of 1,000,000 pixels"}
+                               hashtag={"#pxl.place"} style={{marginRight: 10}}>
+            <FacebookIcon size={32} round={true}/>
+          </FacebookShareButton>
+
+          <TwitterShareButton url={"https://pxl.place"}
+                              title={"pxl.place a shared canvas of 1,000,000 pixels!"}
+                              style={{marginRight: 10}}>
+            <TwitterIcon size={32} round={true}/>
+          </TwitterShareButton>
+
+          <LinkedinShareButton url={"https://pxl.place"}
+                               title={"pxl.place a shared canvas of 1,000,000 pixels!"}
+                               summary={"pxl.place a shared canvas of 1,000,000 pixels!"}
+                               source={"pxl.place"} style={{marginRight: 10}}>
+            <LinkedinIcon size={32} round={true}/>
+          </LinkedinShareButton>
+        </Modal>
 
       </>
   );

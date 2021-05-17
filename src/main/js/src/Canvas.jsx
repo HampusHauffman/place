@@ -10,7 +10,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   const dpiScale = dpi !== 1 ? 5000 : 1000;
   const maxScale = 40 * 1000 / dpiScale;
 
-  const swatchColors = [
+  const swatchColors = [ //TODO change this if you reset the board
     '#FFFFFF',
     '#E4E4E4',
     '#888888',
@@ -124,6 +124,10 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
       bottom: 'auto',
       marginRight: '-35%',
       transform: 'translate(-50%, -30%)',
+      background: "#121212",
+      color: "#FAFAFA",
+      border: '3px solid ' + swatchColors[selectedColor],
+      borderRadius: '25px',
     }
   };
 
@@ -178,8 +182,8 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                   >
                     <img src={"/reset.png"} alt={"reset"} style={{
                       width: 30,
-                      marginLeft: 0,
-                      marginTop: 0,
+                      marginLeft: -1,
+                      marginTop: 1,
                       transform: "scaleX(-1)"
                     }}/>
                   </button>
@@ -187,6 +191,9 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
                   <Modal
                       isOpen={modalOpen}
+                      onRequestClose={() => {
+                        setModalOpen(false)
+                      }}
                       onAfterClose={() => {
                         setTransform(
                             Math.random() * (-40000 + window.innerWidth),
@@ -206,10 +213,12 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
                               backgroundColor: swatchColors[selectedColor],
                               right: 10,
                               top: 10
-                            }}></button>
+                            }}>
+                      <span style={{marginTop:-2}}>x</span>
+                    </button>
                     <br/>
                     <h2 style={{marginTop: -10}}>This is PXL.PLACE</h2>
-                    <h3>Try zooming and moving around and place some PIXELS</h3>
+                    <h3>Try moving and zooming around and place some PIXELS</h3>
                     <p>PXL.PLACE is a live canvas for people to create art
                       together across the world!</p>
                   </Modal>
