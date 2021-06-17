@@ -13,10 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping
 @Slf4j
+@Component
 public class Webhook {
 
   @Autowired
@@ -43,12 +43,14 @@ public class Webhook {
   String redisHost;
 
   @GetMapping("/board/{x}/{y}")
-  public @ResponseBody String test(@PathVariable(value="x") int x, @PathVariable(value="y") int y){
+  public @ResponseBody
+  String test(@PathVariable(value = "x") int x, @PathVariable(value = "y") int y) {
     log.info("GetMapping on /");
-    return redisRepo.getPixel(x,y).toString();
+    return redisRepo.getPixel(x, y).toString();
   }
 
-  private @ResponseBody String fill(){
+  private @ResponseBody
+  String fill() {
     log.info("Filling");
     redisRepo.setAllOnce();
     return "Filled the board";
@@ -64,32 +66,36 @@ public class Webhook {
   }
 
   @GetMapping("/board")
-  public ResponseEntity<String> getBoard(){
+  public ResponseEntity<String> getBoard() {
     var allPixels = redisRepo.getAllPixels();
-    System.out.println(Arrays.toString(allPixels));
     return ResponseEntity.of(Optional.of(Arrays.toString(allPixels)));
   }
 
+  @GetMapping("/board/raw")
+  public ResponseEntity<byte[]> getBoardRaw() {
+    var allPixels = redisRepo.getAllPixels();
+    return ResponseEntity.of(Optional.of(allPixels));
+  }
 
   @SneakyThrows
   @MessageMapping("/pixel")
-  public void pixels(@Payload String pixel)  {
+  public void pixels(@Payload String pixel) {
     log.info("Got a Pixel from client: {} ", pixel);
-    Pixel p = objectMapper.readValue(pixel,Pixel.class);
+    Pixel p = objectMapper.readValue(pixel, Pixel.class);
 
-    if(p.getColor() > 15 || p.getColor() < 0) return;
+    if (p.getColor() > 15 || p.getColor() < 0) {
+      return;
+    }
 
     redisRepo.setPixel(p);
     redisMessagePublisher.publish(p);
   }
 
   @SneakyThrows
-  public void sendPixel(Pixel p){
+  public void sendPixel(Pixel p) {
     log.info("Sending Pixel: {}", p);
     template.convertAndSend("/topic/place", objectMapper.writeValueAsString(p));
   }
-
-
 
 
 }

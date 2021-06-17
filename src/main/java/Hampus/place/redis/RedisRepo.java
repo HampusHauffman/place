@@ -30,7 +30,7 @@ public class RedisRepo {
   @Autowired
   private RedisTemplate<String, Pixel> redisTemplate;
 
-  private BitFieldSubCommands bitFieldSubCommands = BitFieldSubCommands.create();
+  private final BitFieldSubCommands bitFieldSubCommands = BitFieldSubCommands.create();
 
 
   public void setPixel(Pixel p){
