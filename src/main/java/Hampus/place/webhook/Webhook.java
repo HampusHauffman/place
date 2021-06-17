@@ -4,10 +4,13 @@ import Hampus.place.Pixel;
 import Hampus.place.redis.RedisMessagePublisher;
 import Hampus.place.redis.RedisRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -39,7 +42,7 @@ public class Webhook {
   @Value("${spring.redis.host}")
   String redisHost;
 
-  @GetMapping("/{x}/{y}")
+  @GetMapping("/board/{x}/{y}")
   public @ResponseBody String test(@PathVariable(value="x") int x, @PathVariable(value="y") int y){
     log.info("GetMapping on /");
     return redisRepo.getPixel(x,y).toString();
@@ -60,11 +63,22 @@ public class Webhook {
     return allPixels;
   }
 
+  @GetMapping("/board")
+  public ResponseEntity<String> getBoard(){
+    var allPixels = redisRepo.getAllPixels();
+    System.out.println(Arrays.toString(allPixels));
+    return ResponseEntity.of(Optional.of(Arrays.toString(allPixels)));
+  }
+
+
   @SneakyThrows
   @MessageMapping("/pixel")
   public void pixels(@Payload String pixel)  {
     log.info("Got a Pixel from client: {} ", pixel);
     Pixel p = objectMapper.readValue(pixel,Pixel.class);
+
+    if(p.getColor() > 15 || p.getColor() < 0) return;
+
     redisRepo.setPixel(p);
     redisMessagePublisher.publish(p);
   }

@@ -3,6 +3,7 @@ import './App.css';
 import {TransformComponent, TransformWrapper} from "react-zoom-pan-pinch";
 import Modal from "react-modal";
 
+
 const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
 
@@ -15,7 +16,6 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     '#E4E4E4',
     '#888888',
     '#222222',
-    '#FFA7D1',
     '#E50000',
     '#E59500',
     '#A06A42',
@@ -25,13 +25,22 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
     '#00D3DD',
     '#0083C7',
     '#0000EA',
+    '#FFA7D1',
     '#CF6EE4',
     '#820080',];
 
   //Reference to the mutable canvas context value
   const canvasRef = useRef(null);
 
+  useEffect(()=>{
+   // download();
+  },[canvasSettings])
 
+  const download = () => {
+    // here is the most important part because if you dont replace you will get a DOM 18 exception.
+    window.location.href=canvasRef.current.toDataURL("image/png", 1.0).replace("image/png",
+        "image/octet-stream"); // it will save locally
+  }
 
   useEffect(() => {
 
@@ -71,6 +80,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
   }, [pixel])
 
   const placePixel = (p) => {
+    console.log(selectedColor);
     client.publish({
       destination: "/pixel",
       body: JSON.stringify({"x": p.x, "y": p.y, "color": selectedColor})
@@ -82,7 +92,7 @@ const Canvas = ({client, canvasSettings, selectedColor, pixel}) => {
 
 
     if (panStatus.current < 3 && currentScale.current > 3*canvasSettings.imageSize/dpiScale) {
-      console.log(3*1000/dpiScale)
+      //console.log(3*1000/dpiScale)
       placePixel(clickedPixel);
     }
     panStatus.current = 0;

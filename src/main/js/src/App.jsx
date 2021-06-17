@@ -25,11 +25,11 @@ const App = () => {
   const [pixel, setPixel] = useState(null);
 
   const [client, setClient] = useState(new Client({
-    brokerURL: 'wss://place-run-qsjhjkmw7a-ew.a.run.app/ws',
-    //brokerURL: 'ws://localhost:8080/ws',
+    //brokerURL: 'wss://place-run-qsjhjkmw7a-ew.a.run.app/ws',
+    brokerURL: 'ws://localhost:8080/ws',
 
     debug: function (str) {
-      console.log(str);
+      //console.log(str);
     },
 
     reconnectDelay: 10,
@@ -97,7 +97,6 @@ const App = () => {
     '#E4E4E4',
     '#888888',
     '#222222',
-    '#FFA7D1',
     '#E50000',
     '#E59500',
     '#A06A42',
@@ -107,6 +106,7 @@ const App = () => {
     '#00D3DD',
     '#0083C7',
     '#0000EA',
+    '#FFA7D1',
     '#CF6EE4',
     '#820080',];
 
